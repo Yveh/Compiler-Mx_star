@@ -1,33 +1,124 @@
 grammar Mx_star;
 
-statement
-    : declarationstatement
+file
+    : declarationlist
     ;
 
-declarationstatement
+declarationlist
+    : declaration
+    | declarationlist declaration
+    ;
+
+declaration
+    : classdeclaration
+    | functiondeclaration
+    | declarationstatement
+    ;
+//class
+classdeclaration
+    : Class Identifier '{' memberdeclarationlist? '}'
+    ;
+
+memberdeclarationlist
+    : memberdeclaration
+    | memberdeclarationlist memberdeclaration
+    ;
+
+memberdeclaration
+    : declarationstatement
+    | functiondeclaration
+    ;
+//function
+functiondeclaration
+    : typespecifier? Identifier '(' parameterlist? ')' block
+    ;
+
+parameterlist
+    : parameter
+    | parameterlist ',' parameter
+    ;
+
+parameter
     : typespecifier initdeclarator
     ;
 
+//statement
+statement
+    : declarationstatement
+    | ifstatement
+    | iterationstatement
+    | jumpstatement
+    | expressionstatement
+    | emptystatement
+    | block
+    ;
+
+block
+    : '{' statementlist? '}'
+    ;
+
+statementlist
+    : statement
+    | statementlist statement
+    ;
+
+declarationstatement
+    : typespecifier initdeclaratorlist ';'
+    ;
+
+initdeclaratorlist
+    : initdeclarator
+    | initdeclaratorlist ',' initdeclarator
+    ;
+
 initdeclarator
-    : declarator initializer
+    : declarator initializer?
     ;
 
 declarator
     : Identifier
-    | declarator '[]'
     ;
 
 initializer
     : '=' expression
     ;
 
+ifstatement
+    : If '(' expression ')' statement
+    | If '(' expression ')' statement Else statement
+    ;
+
+iterationstatement
+    : While '(' expression ')' statement
+    | For '(' expression? ';' expression? ';' expression? ')' statement
+    ;
+
+jumpstatement
+    : Break ';'
+    | Continue ';'
+    | Return expression? ';'
+    ;
+
+expressionstatement
+    : expression ';'
+    ;
+
+emptystatement
+    : ';'
+    ;
+
 //expression
+expressionlist
+    : expression
+    | expressionlist ',' expression
+    ;
+
 expression
     : assignmentexpression
     ;
 
 assignmentexpression
-    : logicalandexpression
+    : logicalorexpression
     | logicalorexpression '=' assignmentexpression
     ;
 
@@ -86,19 +177,27 @@ multiplicativeexpression
 
 unaryexpression
     : postfixexpression
-    | '++' postfixexpression
-    | '--' postfixexpression
-    | unaryoperator postfixexpression
+    | '++' unaryexpression
+    | '--' unaryexpression
+    | unaryoperator unaryexpression
     | newexpression
     ;
 
 newexpression
-    : New typespecifier newdeclarator?
+    : New newtypespecifier newinitializer?
+    ;
+
+newinitializer
+    : '(' expression? ')'
+    ;
+
+newtypespecifier
+    : simpletypespecifier newdeclarator?
     ;
 
 newdeclarator
-    : '[' expression ']'
-    | newdeclarator '[' expression ']'
+    : '[' expression? ']'
+    | newdeclarator '[' expression? ']'
     ;
 
 postfixexpression
@@ -106,11 +205,13 @@ postfixexpression
     | postfixexpression '++'
     | postfixexpression '--'
     | postfixexpression '[' expression ']'
-    | postfixexpression '.' Identifier
+    | postfixexpression '(' expressionlist? ')'
+    | postfixexpression '.' expression
     ;
 
 primaryexpression
     : literal
+    | This
     | Identifier
     | '(' expression ')'
     ;
@@ -141,6 +242,11 @@ unaryoperator
     ;
 
 typespecifier
+    : simpletypespecifier
+    | typespecifier '[' ']'
+    ;
+
+simpletypespecifier
     : Bool
     | Int
     | Void
@@ -189,6 +295,9 @@ False
     ;
 If
     : 'if'
+    ;
+Else
+    : 'else'
     ;
 For
     : 'for'
