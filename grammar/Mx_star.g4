@@ -192,12 +192,17 @@ newinitializer
     ;
 
 newtypespecifier
-    : simpletypespecifier newdeclarator?
+    : simpletypespecifier newdeclarator? pointerspecifier?
     ;
 
 newdeclarator
-    : '[' expression? ']'
-    | newdeclarator '[' expression? ']'
+    : '[' expression ']'
+    | newdeclarator '[' expression ']'
+    ;
+
+pointerspecifier
+    : '[' ']'
+    | pointerspecifier '[' ']'
     ;
 
 postfixexpression
