@@ -443,7 +443,6 @@ public:
     AndexpressionContext *andexpression();
     XorexpressionContext *xorexpression();
     antlr4::tree::TerminalNode *Bitwise_xor();
-    EqualityexpressionContext *equalityexpression();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

@@ -30,7 +30,7 @@ statement
     ;
 
 block
-    : '{' (statement)* '}'
+    : Opencur (statement)* Closecur
     ;
 
 vardeclaration

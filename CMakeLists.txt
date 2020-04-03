@@ -18,6 +18,6 @@ set(AST_src
         ${PROJECT_SOURCE_DIR}/AST/ASTBuilder.cpp
         ${PROJECT_SOURCE_DIR}/AST/ASTNode.cpp
         ${PROJECT_SOURCE_DIR}/AST/types.cpp
-        ${PROJECT_SOURCE_DIR}/AST/ASTVisitor.cpp)
+        ${PROJECT_SOURCE_DIR}/AST/ASTVisitor.cpp AST/Env.cpp AST/Env.h AST/SymbolTable.cpp AST/SymbolTable.h)
 add_executable(Compiler-Mx_star ${lexer_parser_src} ${AST_src} main.cpp)
 target_link_libraries(Compiler-Mx_star antlr4_static)

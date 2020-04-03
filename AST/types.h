@@ -8,12 +8,7 @@ public:
 
     enum type_et {ty_void, ty_null, ty_bool, ty_int, ty_string, ty_class, ty_func};
     type_et kind;
-
-    //class
     std::string name;
-    //std::unordered_map <std::string, type_t*> field;
-
-    //array
     int dim;
 
     type_t() = default;
