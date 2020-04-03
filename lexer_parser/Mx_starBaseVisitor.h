@@ -15,15 +15,7 @@
 class  Mx_starBaseVisitor : public Mx_starVisitor {
 public:
 
-  virtual antlrcpp::Any visitFile(Mx_starParser::FileContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitDeclarationlist(Mx_starParser::DeclarationlistContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitDeclaration(Mx_starParser::DeclarationContext *ctx) override {
+  virtual antlrcpp::Any visitProg(Mx_starParser::ProgContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -31,19 +23,7 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitMemberdeclarationlist(Mx_starParser::MemberdeclarationlistContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitMemberdeclaration(Mx_starParser::MemberdeclarationContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual antlrcpp::Any visitFunctiondeclaration(Mx_starParser::FunctiondeclarationContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitParameterlist(Mx_starParser::ParameterlistContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -59,27 +39,7 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitStatementlist(Mx_starParser::StatementlistContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitDeclarationstatement(Mx_starParser::DeclarationstatementContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitInitdeclaratorlist(Mx_starParser::InitdeclaratorlistContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitInitdeclarator(Mx_starParser::InitdeclaratorContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitDeclarator(Mx_starParser::DeclaratorContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitInitializer(Mx_starParser::InitializerContext *ctx) override {
+  virtual antlrcpp::Any visitVardeclaration(Mx_starParser::VardeclarationContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -88,6 +48,18 @@ public:
   }
 
   virtual antlrcpp::Any visitIterationstatement(Mx_starParser::IterationstatementContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitForinit(Mx_starParser::ForinitContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitForcond(Mx_starParser::ForcondContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitForincr(Mx_starParser::ForincrContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -103,15 +75,7 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitExpressionlist(Mx_starParser::ExpressionlistContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual antlrcpp::Any visitExpression(Mx_starParser::ExpressionContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitAssignmentexpression(Mx_starParser::AssignmentexpressionContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -163,43 +127,11 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitNewinitializer(Mx_starParser::NewinitializerContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitNewtypespecifier(Mx_starParser::NewtypespecifierContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitNewdeclarator(Mx_starParser::NewdeclaratorContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitPointerspecifier(Mx_starParser::PointerspecifierContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual antlrcpp::Any visitPostfixexpression(Mx_starParser::PostfixexpressionContext *ctx) override {
     return visitChildren(ctx);
   }
 
   virtual antlrcpp::Any visitPrimaryexpression(Mx_starParser::PrimaryexpressionContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitEqualityoperator(Mx_starParser::EqualityoperatorContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitRelationoperator(Mx_starParser::RelationoperatorContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitShiftoperator(Mx_starParser::ShiftoperatorContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitUnaryoperator(Mx_starParser::UnaryoperatorContext *ctx) override {
     return visitChildren(ctx);
   }
 

@@ -12,16 +12,16 @@
 class  Mx_starLexer : public antlr4::Lexer {
 public:
   enum {
-    T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, T__4 = 5, T__5 = 6, T__6 = 7, 
-    T__7 = 8, T__8 = 9, T__9 = 10, T__10 = 11, T__11 = 12, T__12 = 13, T__13 = 14, 
-    T__14 = 15, T__15 = 16, T__16 = 17, T__17 = 18, T__18 = 19, T__19 = 20, 
-    T__20 = 21, T__21 = 22, T__22 = 23, T__23 = 24, T__24 = 25, T__25 = 26, 
-    T__26 = 27, T__27 = 28, T__28 = 29, T__29 = 30, T__30 = 31, T__31 = 32, 
-    Stringliteral = 33, Integerliteral = 34, Int = 35, Bool = 36, String = 37, 
-    Null = 38, Void = 39, True = 40, False = 41, If = 42, Else = 43, For = 44, 
-    While = 45, Break = 46, Continue = 47, Return = 48, New = 49, Class = 50, 
-    This = 51, Identifier = 52, Whitespace = 53, Newline = 54, BlockComment = 55, 
-    LineComment = 56
+    Stringliteral = 1, Integerliteral = 2, Assign = 3, Logic_or = 4, Logic_and = 5, 
+    Bitwise_or = 6, Bitwise_xor = 7, Bitwise_and = 8, Equal = 9, NotEqual = 10, 
+    Less = 11, Lesseq = 12, Greater = 13, Greatereq = 14, Leftshift = 15, 
+    Rightshift = 16, Plus = 17, Minus = 18, Mul = 19, Div = 20, Mod = 21, 
+    Inc = 22, Dec = 23, Logic_not = 24, Bitwise_not = 25, Dot = 26, Openpar = 27, 
+    Closepar = 28, Openbra = 29, Closebra = 30, Opencur = 31, Closecur = 32, 
+    Comma = 33, Semicolon = 34, Int = 35, Bool = 36, String = 37, Null = 38, 
+    Void = 39, True = 40, False = 41, If = 42, Else = 43, For = 44, While = 45, 
+    Break = 46, Continue = 47, Return = 48, New = 49, Class = 50, This = 51, 
+    Identifier = 52, Whitespace = 53, Newline = 54, BlockComment = 55, LineComment = 56
   };
 
   Mx_starLexer(antlr4::CharStream *input);

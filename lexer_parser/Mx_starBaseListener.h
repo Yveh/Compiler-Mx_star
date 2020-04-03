@@ -16,29 +16,14 @@
 class  Mx_starBaseListener : public Mx_starListener {
 public:
 
-  virtual void enterFile(Mx_starParser::FileContext * /*ctx*/) override { }
-  virtual void exitFile(Mx_starParser::FileContext * /*ctx*/) override { }
-
-  virtual void enterDeclarationlist(Mx_starParser::DeclarationlistContext * /*ctx*/) override { }
-  virtual void exitDeclarationlist(Mx_starParser::DeclarationlistContext * /*ctx*/) override { }
-
-  virtual void enterDeclaration(Mx_starParser::DeclarationContext * /*ctx*/) override { }
-  virtual void exitDeclaration(Mx_starParser::DeclarationContext * /*ctx*/) override { }
+  virtual void enterProg(Mx_starParser::ProgContext * /*ctx*/) override { }
+  virtual void exitProg(Mx_starParser::ProgContext * /*ctx*/) override { }
 
   virtual void enterClassdeclaration(Mx_starParser::ClassdeclarationContext * /*ctx*/) override { }
   virtual void exitClassdeclaration(Mx_starParser::ClassdeclarationContext * /*ctx*/) override { }
 
-  virtual void enterMemberdeclarationlist(Mx_starParser::MemberdeclarationlistContext * /*ctx*/) override { }
-  virtual void exitMemberdeclarationlist(Mx_starParser::MemberdeclarationlistContext * /*ctx*/) override { }
-
-  virtual void enterMemberdeclaration(Mx_starParser::MemberdeclarationContext * /*ctx*/) override { }
-  virtual void exitMemberdeclaration(Mx_starParser::MemberdeclarationContext * /*ctx*/) override { }
-
   virtual void enterFunctiondeclaration(Mx_starParser::FunctiondeclarationContext * /*ctx*/) override { }
   virtual void exitFunctiondeclaration(Mx_starParser::FunctiondeclarationContext * /*ctx*/) override { }
-
-  virtual void enterParameterlist(Mx_starParser::ParameterlistContext * /*ctx*/) override { }
-  virtual void exitParameterlist(Mx_starParser::ParameterlistContext * /*ctx*/) override { }
 
   virtual void enterParameter(Mx_starParser::ParameterContext * /*ctx*/) override { }
   virtual void exitParameter(Mx_starParser::ParameterContext * /*ctx*/) override { }
@@ -49,29 +34,23 @@ public:
   virtual void enterBlock(Mx_starParser::BlockContext * /*ctx*/) override { }
   virtual void exitBlock(Mx_starParser::BlockContext * /*ctx*/) override { }
 
-  virtual void enterStatementlist(Mx_starParser::StatementlistContext * /*ctx*/) override { }
-  virtual void exitStatementlist(Mx_starParser::StatementlistContext * /*ctx*/) override { }
-
-  virtual void enterDeclarationstatement(Mx_starParser::DeclarationstatementContext * /*ctx*/) override { }
-  virtual void exitDeclarationstatement(Mx_starParser::DeclarationstatementContext * /*ctx*/) override { }
-
-  virtual void enterInitdeclaratorlist(Mx_starParser::InitdeclaratorlistContext * /*ctx*/) override { }
-  virtual void exitInitdeclaratorlist(Mx_starParser::InitdeclaratorlistContext * /*ctx*/) override { }
-
-  virtual void enterInitdeclarator(Mx_starParser::InitdeclaratorContext * /*ctx*/) override { }
-  virtual void exitInitdeclarator(Mx_starParser::InitdeclaratorContext * /*ctx*/) override { }
-
-  virtual void enterDeclarator(Mx_starParser::DeclaratorContext * /*ctx*/) override { }
-  virtual void exitDeclarator(Mx_starParser::DeclaratorContext * /*ctx*/) override { }
-
-  virtual void enterInitializer(Mx_starParser::InitializerContext * /*ctx*/) override { }
-  virtual void exitInitializer(Mx_starParser::InitializerContext * /*ctx*/) override { }
+  virtual void enterVardeclaration(Mx_starParser::VardeclarationContext * /*ctx*/) override { }
+  virtual void exitVardeclaration(Mx_starParser::VardeclarationContext * /*ctx*/) override { }
 
   virtual void enterIfstatement(Mx_starParser::IfstatementContext * /*ctx*/) override { }
   virtual void exitIfstatement(Mx_starParser::IfstatementContext * /*ctx*/) override { }
 
   virtual void enterIterationstatement(Mx_starParser::IterationstatementContext * /*ctx*/) override { }
   virtual void exitIterationstatement(Mx_starParser::IterationstatementContext * /*ctx*/) override { }
+
+  virtual void enterForinit(Mx_starParser::ForinitContext * /*ctx*/) override { }
+  virtual void exitForinit(Mx_starParser::ForinitContext * /*ctx*/) override { }
+
+  virtual void enterForcond(Mx_starParser::ForcondContext * /*ctx*/) override { }
+  virtual void exitForcond(Mx_starParser::ForcondContext * /*ctx*/) override { }
+
+  virtual void enterForincr(Mx_starParser::ForincrContext * /*ctx*/) override { }
+  virtual void exitForincr(Mx_starParser::ForincrContext * /*ctx*/) override { }
 
   virtual void enterJumpstatement(Mx_starParser::JumpstatementContext * /*ctx*/) override { }
   virtual void exitJumpstatement(Mx_starParser::JumpstatementContext * /*ctx*/) override { }
@@ -82,14 +61,8 @@ public:
   virtual void enterEmptystatement(Mx_starParser::EmptystatementContext * /*ctx*/) override { }
   virtual void exitEmptystatement(Mx_starParser::EmptystatementContext * /*ctx*/) override { }
 
-  virtual void enterExpressionlist(Mx_starParser::ExpressionlistContext * /*ctx*/) override { }
-  virtual void exitExpressionlist(Mx_starParser::ExpressionlistContext * /*ctx*/) override { }
-
   virtual void enterExpression(Mx_starParser::ExpressionContext * /*ctx*/) override { }
   virtual void exitExpression(Mx_starParser::ExpressionContext * /*ctx*/) override { }
-
-  virtual void enterAssignmentexpression(Mx_starParser::AssignmentexpressionContext * /*ctx*/) override { }
-  virtual void exitAssignmentexpression(Mx_starParser::AssignmentexpressionContext * /*ctx*/) override { }
 
   virtual void enterLogicalorexpression(Mx_starParser::LogicalorexpressionContext * /*ctx*/) override { }
   virtual void exitLogicalorexpression(Mx_starParser::LogicalorexpressionContext * /*ctx*/) override { }
@@ -127,35 +100,11 @@ public:
   virtual void enterNewexpression(Mx_starParser::NewexpressionContext * /*ctx*/) override { }
   virtual void exitNewexpression(Mx_starParser::NewexpressionContext * /*ctx*/) override { }
 
-  virtual void enterNewinitializer(Mx_starParser::NewinitializerContext * /*ctx*/) override { }
-  virtual void exitNewinitializer(Mx_starParser::NewinitializerContext * /*ctx*/) override { }
-
-  virtual void enterNewtypespecifier(Mx_starParser::NewtypespecifierContext * /*ctx*/) override { }
-  virtual void exitNewtypespecifier(Mx_starParser::NewtypespecifierContext * /*ctx*/) override { }
-
-  virtual void enterNewdeclarator(Mx_starParser::NewdeclaratorContext * /*ctx*/) override { }
-  virtual void exitNewdeclarator(Mx_starParser::NewdeclaratorContext * /*ctx*/) override { }
-
-  virtual void enterPointerspecifier(Mx_starParser::PointerspecifierContext * /*ctx*/) override { }
-  virtual void exitPointerspecifier(Mx_starParser::PointerspecifierContext * /*ctx*/) override { }
-
   virtual void enterPostfixexpression(Mx_starParser::PostfixexpressionContext * /*ctx*/) override { }
   virtual void exitPostfixexpression(Mx_starParser::PostfixexpressionContext * /*ctx*/) override { }
 
   virtual void enterPrimaryexpression(Mx_starParser::PrimaryexpressionContext * /*ctx*/) override { }
   virtual void exitPrimaryexpression(Mx_starParser::PrimaryexpressionContext * /*ctx*/) override { }
-
-  virtual void enterEqualityoperator(Mx_starParser::EqualityoperatorContext * /*ctx*/) override { }
-  virtual void exitEqualityoperator(Mx_starParser::EqualityoperatorContext * /*ctx*/) override { }
-
-  virtual void enterRelationoperator(Mx_starParser::RelationoperatorContext * /*ctx*/) override { }
-  virtual void exitRelationoperator(Mx_starParser::RelationoperatorContext * /*ctx*/) override { }
-
-  virtual void enterShiftoperator(Mx_starParser::ShiftoperatorContext * /*ctx*/) override { }
-  virtual void exitShiftoperator(Mx_starParser::ShiftoperatorContext * /*ctx*/) override { }
-
-  virtual void enterUnaryoperator(Mx_starParser::UnaryoperatorContext * /*ctx*/) override { }
-  virtual void exitUnaryoperator(Mx_starParser::UnaryoperatorContext * /*ctx*/) override { }
 
   virtual void enterTypespecifier(Mx_starParser::TypespecifierContext * /*ctx*/) override { }
   virtual void exitTypespecifier(Mx_starParser::TypespecifierContext * /*ctx*/) override { }

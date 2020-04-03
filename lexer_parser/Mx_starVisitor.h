@@ -19,21 +19,11 @@ public:
   /**
    * Visit parse trees produced by Mx_starParser.
    */
-    virtual antlrcpp::Any visitFile(Mx_starParser::FileContext *context) = 0;
-
-    virtual antlrcpp::Any visitDeclarationlist(Mx_starParser::DeclarationlistContext *context) = 0;
-
-    virtual antlrcpp::Any visitDeclaration(Mx_starParser::DeclarationContext *context) = 0;
+    virtual antlrcpp::Any visitProg(Mx_starParser::ProgContext *context) = 0;
 
     virtual antlrcpp::Any visitClassdeclaration(Mx_starParser::ClassdeclarationContext *context) = 0;
 
-    virtual antlrcpp::Any visitMemberdeclarationlist(Mx_starParser::MemberdeclarationlistContext *context) = 0;
-
-    virtual antlrcpp::Any visitMemberdeclaration(Mx_starParser::MemberdeclarationContext *context) = 0;
-
     virtual antlrcpp::Any visitFunctiondeclaration(Mx_starParser::FunctiondeclarationContext *context) = 0;
-
-    virtual antlrcpp::Any visitParameterlist(Mx_starParser::ParameterlistContext *context) = 0;
 
     virtual antlrcpp::Any visitParameter(Mx_starParser::ParameterContext *context) = 0;
 
@@ -41,21 +31,17 @@ public:
 
     virtual antlrcpp::Any visitBlock(Mx_starParser::BlockContext *context) = 0;
 
-    virtual antlrcpp::Any visitStatementlist(Mx_starParser::StatementlistContext *context) = 0;
-
-    virtual antlrcpp::Any visitDeclarationstatement(Mx_starParser::DeclarationstatementContext *context) = 0;
-
-    virtual antlrcpp::Any visitInitdeclaratorlist(Mx_starParser::InitdeclaratorlistContext *context) = 0;
-
-    virtual antlrcpp::Any visitInitdeclarator(Mx_starParser::InitdeclaratorContext *context) = 0;
-
-    virtual antlrcpp::Any visitDeclarator(Mx_starParser::DeclaratorContext *context) = 0;
-
-    virtual antlrcpp::Any visitInitializer(Mx_starParser::InitializerContext *context) = 0;
+    virtual antlrcpp::Any visitVardeclaration(Mx_starParser::VardeclarationContext *context) = 0;
 
     virtual antlrcpp::Any visitIfstatement(Mx_starParser::IfstatementContext *context) = 0;
 
     virtual antlrcpp::Any visitIterationstatement(Mx_starParser::IterationstatementContext *context) = 0;
+
+    virtual antlrcpp::Any visitForinit(Mx_starParser::ForinitContext *context) = 0;
+
+    virtual antlrcpp::Any visitForcond(Mx_starParser::ForcondContext *context) = 0;
+
+    virtual antlrcpp::Any visitForincr(Mx_starParser::ForincrContext *context) = 0;
 
     virtual antlrcpp::Any visitJumpstatement(Mx_starParser::JumpstatementContext *context) = 0;
 
@@ -63,11 +49,7 @@ public:
 
     virtual antlrcpp::Any visitEmptystatement(Mx_starParser::EmptystatementContext *context) = 0;
 
-    virtual antlrcpp::Any visitExpressionlist(Mx_starParser::ExpressionlistContext *context) = 0;
-
     virtual antlrcpp::Any visitExpression(Mx_starParser::ExpressionContext *context) = 0;
-
-    virtual antlrcpp::Any visitAssignmentexpression(Mx_starParser::AssignmentexpressionContext *context) = 0;
 
     virtual antlrcpp::Any visitLogicalorexpression(Mx_starParser::LogicalorexpressionContext *context) = 0;
 
@@ -93,25 +75,9 @@ public:
 
     virtual antlrcpp::Any visitNewexpression(Mx_starParser::NewexpressionContext *context) = 0;
 
-    virtual antlrcpp::Any visitNewinitializer(Mx_starParser::NewinitializerContext *context) = 0;
-
-    virtual antlrcpp::Any visitNewtypespecifier(Mx_starParser::NewtypespecifierContext *context) = 0;
-
-    virtual antlrcpp::Any visitNewdeclarator(Mx_starParser::NewdeclaratorContext *context) = 0;
-
-    virtual antlrcpp::Any visitPointerspecifier(Mx_starParser::PointerspecifierContext *context) = 0;
-
     virtual antlrcpp::Any visitPostfixexpression(Mx_starParser::PostfixexpressionContext *context) = 0;
 
     virtual antlrcpp::Any visitPrimaryexpression(Mx_starParser::PrimaryexpressionContext *context) = 0;
-
-    virtual antlrcpp::Any visitEqualityoperator(Mx_starParser::EqualityoperatorContext *context) = 0;
-
-    virtual antlrcpp::Any visitRelationoperator(Mx_starParser::RelationoperatorContext *context) = 0;
-
-    virtual antlrcpp::Any visitShiftoperator(Mx_starParser::ShiftoperatorContext *context) = 0;
-
-    virtual antlrcpp::Any visitUnaryoperator(Mx_starParser::UnaryoperatorContext *context) = 0;
 
     virtual antlrcpp::Any visitTypespecifier(Mx_starParser::TypespecifierContext *context) = 0;
 

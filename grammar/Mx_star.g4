@@ -1,50 +1,26 @@
 grammar Mx_star;
 
-file
-    : declarationlist
+prog
+    : (classdeclaration | functiondeclaration | vardeclaration)*
     ;
 
-declarationlist
-    : declaration
-    | declarationlist declaration
-    ;
-
-declaration
-    : classdeclaration
-    | functiondeclaration
-    | declarationstatement
-    ;
 //class
 classdeclaration
-    : Class Identifier '{' memberdeclarationlist? '}'
+    : Class Identifier Opencur (functiondeclaration | vardeclaration)* Closecur Semicolon
     ;
 
-memberdeclarationlist
-    : memberdeclaration
-    | memberdeclarationlist memberdeclaration
-    ;
-
-memberdeclaration
-    : declarationstatement
-    | functiondeclaration
-    ;
 //function
 functiondeclaration
-    : typespecifier? Identifier '(' parameterlist? ')' block
-    ;
-
-parameterlist
-    : parameter
-    | parameterlist ',' parameter
+    : typespecifier? Identifier Openpar (parameter (Comma parameter)*)? Closepar block
     ;
 
 parameter
-    : typespecifier initdeclarator
+    : typespecifier (Openbra Closebra)* Identifier
     ;
 
 //statement
 statement
-    : declarationstatement
+    : vardeclaration
     | ifstatement
     | iterationstatement
     | jumpstatement
@@ -54,201 +30,146 @@ statement
     ;
 
 block
-    : '{' statementlist? '}'
+    : '{' (statement)* '}'
     ;
 
-statementlist
-    : statement
-    | statementlist statement
-    ;
-
-declarationstatement
-    : typespecifier initdeclaratorlist ';'
-    ;
-
-initdeclaratorlist
-    : initdeclarator
-    | initdeclaratorlist ',' initdeclarator
-    ;
-
-initdeclarator
-    : declarator initializer?
-    ;
-
-declarator
-    : Identifier
-    ;
-
-initializer
-    : '=' expression
+vardeclaration
+    : typespecifier Identifier (Assign expression)? Semicolon
     ;
 
 ifstatement
-    : If '(' expression ')' statement
-    | If '(' expression ')' statement Else statement
+    : If Openpar expression Closepar statement
+    | If Openpar expression Closepar statement Else statement
     ;
 
 iterationstatement
-    : While '(' expression ')' statement
-    | For '(' expression? ';' expression? ';' expression? ')' statement
+    : While Openpar expression Closepar statement
+    | For Openpar forinit? Semicolon forcond? Semicolon forincr? Closepar statement
+    ;
+
+forinit
+    : expression
+    ;
+
+forcond
+    : expression
+    ;
+
+forincr
+    : expression
     ;
 
 jumpstatement
-    : Break ';'
-    | Continue ';'
-    | Return expression? ';'
+    : Break Semicolon
+    | Continue Semicolon
+    | Return expression? Semicolon
     ;
 
 expressionstatement
-    : expression ';'
+    : expression Semicolon
     ;
 
 emptystatement
-    : ';'
+    : Semicolon
     ;
 
 //expression
-expressionlist
-    : expression
-    | expressionlist ',' expression
-    ;
-
 expression
-    : assignmentexpression
-    ;
-
-assignmentexpression
     : logicalorexpression
-    | logicalorexpression '=' assignmentexpression
+    | logicalorexpression Assign expression
     ;
 
 logicalorexpression
     : logicalandexpression
-    | logicalorexpression '||' logicalandexpression
+    | logicalorexpression Logic_or logicalandexpression
     ;
 
 logicalandexpression
     : orexpression
-    | logicalandexpression '&&' orexpression
+    | logicalandexpression Logic_and orexpression
     ;
 
 orexpression
     : xorexpression
-    | orexpression '|' xorexpression
+    | orexpression Bitwise_or xorexpression
     ;
 
 xorexpression
     : andexpression
-    | xorexpression '^' equalityexpression
+    | xorexpression Bitwise_xor andexpression
     ;
 
 andexpression
     : equalityexpression
-    | andexpression '&' equalityexpression
+    | andexpression Bitwise_and equalityexpression
     ;
 
 equalityexpression
     : relationalexpression
-    | equalityexpression equalityoperator relationalexpression
+    | equalityexpression Equal relationalexpression
+    | equalityexpression NotEqual relationalexpression
     ;
 
 relationalexpression
     : shiftexpression
-    | relationalexpression relationoperator shiftexpression
+    | relationalexpression Less shiftexpression
+    | relationalexpression Lesseq shiftexpression
+    | relationalexpression Greater shiftexpression
+    | relationalexpression Greatereq shiftexpression
     ;
 
 shiftexpression
     : additiveexpression
-    | shiftexpression shiftoperator additiveexpression
+    | shiftexpression Leftshift additiveexpression
+    | shiftexpression Rightshift additiveexpression
     ;
 
 additiveexpression
     : multiplicativeexpression
-    | additiveexpression '+' multiplicativeexpression
-    | additiveexpression '-' multiplicativeexpression
+    | additiveexpression Plus multiplicativeexpression
+    | additiveexpression Minus multiplicativeexpression
     ;
 
 multiplicativeexpression
     : unaryexpression
-    | multiplicativeexpression '*' unaryexpression
-    | multiplicativeexpression '/' unaryexpression
-    | multiplicativeexpression '%' unaryexpression
+    | multiplicativeexpression Mul unaryexpression
+    | multiplicativeexpression Div unaryexpression
+    | multiplicativeexpression Mod unaryexpression
     ;
 
 unaryexpression
     : postfixexpression
-    | '++' unaryexpression
-    | '--' unaryexpression
-    | unaryoperator unaryexpression
+    | Inc unaryexpression
+    | Dec unaryexpression
+    | Bitwise_not unaryexpression
+    | Logic_not unaryexpression
+    | Plus unaryexpression
+    | Minus unaryexpression
     | newexpression
     ;
 
 newexpression
-    : New newtypespecifier newinitializer?
-    ;
-
-newinitializer
-    : '(' expression? ')'
-    ;
-
-newtypespecifier
-    : simpletypespecifier newdeclarator? pointerspecifier?
-    ;
-
-newdeclarator
-    : '[' expression ']'
-    | newdeclarator '[' expression ']'
-    ;
-
-pointerspecifier
-    : '[' ']'
-    | pointerspecifier '[' ']'
+    : New simpletypespecifier (Openbra expression Closebra)* (Openbra Closebra)*
     ;
 
 postfixexpression
     : primaryexpression
-    | postfixexpression '++'
-    | postfixexpression '--'
-    | postfixexpression '[' expression ']'
-    | postfixexpression '(' expressionlist? ')'
-    | postfixexpression '.' expression
+    | postfixexpression Inc
+    | postfixexpression Dec
+    | postfixexpression Openbra expression Closebra
+    | postfixexpression Openpar (expression (Comma expression)*)? Closepar
+    | postfixexpression Dot Identifier
     ;
 
 primaryexpression
     : literal
     | This
     | Identifier
-    | '(' expression ')'
-    ;
-
-//fragment
-
-equalityoperator
-    : '=='
-    | '!='
-    ;
-
-relationoperator
-    : '<'
-    | '<='
-    | '>'
-    | '>='
-    ;
-
-shiftoperator
-    : '<<'
-    | '>>'
-    ;
-
-unaryoperator
-    : '~'
-    | '-'
-    | '!'
+    | Openpar expression Closepar
     ;
 
 typespecifier
-    : simpletypespecifier
-    | typespecifier '[' ']'
+    : simpletypespecifier (Openbra Closebra)*
     ;
 
 simpletypespecifier
@@ -265,16 +186,148 @@ literal
     | Stringliteral
     | Null
     ;
-Stringliteral
-    : '"' Char* '"'
-    ;
+
 booleanliteral
     : True
     | False
     ;
 
+//fragment
+
+Stringliteral
+    : '"' Char* '"'
+    ;
+
 Integerliteral
     : DIGIT+
+    ;
+
+Assign
+    : '='
+    ;
+
+Logic_or
+    : '||'
+    ;
+
+Logic_and
+    : '&&'
+    ;
+
+Bitwise_or
+    : '|'
+    ;
+
+Bitwise_xor
+    : '^'
+    ;
+
+Bitwise_and
+    : '&'
+    ;
+
+Equal
+    : '=='
+    ;
+
+NotEqual
+    : '!='
+    ;
+
+Less
+    : '<'
+    ;
+
+Lesseq
+    : '<='
+    ;
+
+Greater
+    : '>'
+    ;
+
+Greatereq
+    : '>='
+    ;
+
+Leftshift
+    : '<<'
+    ;
+
+Rightshift
+    : '>>'
+    ;
+
+Plus
+    : '+'
+    ;
+
+Minus
+    : '-'
+    ;
+
+Mul
+    : '*'
+    ;
+
+Div
+    : '/'
+    ;
+
+Mod
+    : '%'
+    ;
+
+Inc
+    : '++'
+    ;
+
+Dec
+    : '--'
+    ;
+
+Logic_not
+    : '!'
+    ;
+
+Bitwise_not
+    : '~'
+    ;
+
+Dot
+    : '.'
+    ;
+
+Openpar
+    : '('
+    ;
+
+Closepar
+    : ')'
+    ;
+
+Openbra
+    : '['
+    ;
+
+Closebra
+    : ']'
+    ;
+
+Opencur
+    : '{'
+    ;
+
+Closecur
+    : '}'
+    ;
+
+Comma
+    : ','
+    ;
+
+Semicolon
+    : ';'
     ;
 
 Int
