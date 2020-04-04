@@ -1,3 +1,4 @@
-cd local
+mkdir exec
+cd exec
 cmake ..
 make
