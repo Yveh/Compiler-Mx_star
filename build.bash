@@ -1,0 +1,3 @@
+cd local
+cmake ..
+make
