@@ -9,9 +9,8 @@
 #include "Builtin.h"
 
 int main(int argc, char *argv[]){
-
     /* If Debug */
-//    const std::string filepath("../local-judge/testcase/sema/class-package/class-12.mx");
+//    const std::string filepath("../local-judge/testcase/sema/misc-package/misc-19.mx");
 //    std::ifstream ifs;
 //    ifs.open(filepath);
 //    if (!ifs.good()) {
@@ -30,12 +29,17 @@ int main(int argc, char *argv[]){
         return -1;
     ASTBuilder builder;
     auto node = builder.build(tree);
-    SematicIssue issues;
+    std::shared_ptr<SematicIssue> issues = std::make_shared<SematicIssue>();
     TypeChecker checker;
-    Builtin::init();
-    checker.createEnv(node, &issues);
-    if (issues.count() > 0) {
-        issues.print();
+    Builtin::init(checker.env);
+    checker.createEnv(node.get(), issues.get());
+    if (issues->count() > 0) {
+        issues->print();
+        return -1;
+    }
+    checker.typeCheck(node.get());
+    if (issues->count() > 0) {
+        issues->print();
         return -1;
     }
     return 0;

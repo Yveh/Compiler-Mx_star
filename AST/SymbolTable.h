@@ -14,9 +14,52 @@ private:
     std::vector<std::string> ref;
     std::vector<std::pair<int, int>> stack;
 public:
+    class iterator {
+    public:
+        std::map<std::string, int>::iterator it;
+        std::vector<T> *vec;
+        iterator(std::map<std::string, int>::iterator _it, std::vector<T> *_vec) : it(_it), vec(_vec) {}
+        iterator operator++ (int) {
+            iterator ret(it, vec);
+            it++;
+            return ret;
+        }
+        iterator &operator++ () {
+            it++;
+            return *this;
+        }
+        iterator operator-- (int) {
+            iterator ret(it, vec);
+            it--;
+            return ret;
+        }
+        iterator &operator-- () {
+            it--;
+            return *this;
+        }
+        std::pair<std::string, T> operator*() const
+        {
+            return std::make_pair(it->first, (*vec)[it->second]);
+        }
+        bool operator==(const iterator &rhs) const
+        {
+            return it == rhs.it && vec == rhs.vec;
+        }
+        bool operator!=(const iterator &rhs) const
+        {
+            return !(*this == rhs);
+        }
+    };
+    iterator begin() {
+        return iterator(hash.begin(), &vec);
+    }
+    iterator end() {
+        return iterator(hash.end(), &vec);
+    }
     bool insert(std::string key, T value);
+    bool insert(std::pair<std::string, T> p);
     bool count(std::string s);
-    T find(std::string s);
+    T & find(std::string s);
     void beginScope();
     void endScope();
 };
@@ -29,21 +72,27 @@ bool SymbolTable<T>::insert(std::string key, T value) {
             return false;
         else {
             stack.push_back(std::make_pair(-1, tmp));
-            hash[key] = ord++;
-            vec[ord] = value;
-            ref[ord] = key;
-            stack.push_back(std::make_pair(1, ord));
+            hash[key] = ord;
+            vec.push_back(value);
+            ref.push_back(key);
+            stack.push_back(std::make_pair(1, ord++));
             return true;
         }
     }
     else {
-        hash[key] = ord++;
+        hash[key] = ord;
         vec.push_back(value);
         ref.push_back(key);
-        stack.push_back(std::make_pair(1, ord));
+        stack.push_back(std::make_pair(1, ord++));
         return true;
     }
 }
+
+template<typename T>
+bool SymbolTable<T>::insert(std::pair<std::string, T> p) {
+    return insert(p.first, p.second);
+}
+
 
 template <typename T>
 bool SymbolTable<T>::count(std::string key) {
@@ -51,13 +100,13 @@ bool SymbolTable<T>::count(std::string key) {
 }
 
 template <typename T>
-T SymbolTable<T>::find(std::string key) {
+T & SymbolTable<T>::find(std::string key) {
     return vec[hash[key]];
 }
 
 template<typename T>
 void SymbolTable<T>::beginScope() {
-    stack.push_back(std::make_pair(0 ,ord));
+    stack.push_back(std::make_pair(0, mark));
     mark = ord;
 }
 
@@ -73,7 +122,8 @@ void SymbolTable<T>::endScope() {
             hash.erase(ref[info.second]);
             vec.pop_back();
             ref.pop_back();
+            ord--;
         }
-    } while (info.first == 0);
+    } while (info.first != 0);
     mark = info.second;
 }

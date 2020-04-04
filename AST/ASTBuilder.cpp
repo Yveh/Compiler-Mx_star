@@ -3,18 +3,25 @@
 antlrcpp::Any ASTBuilder::visitProg(Mx_starParser::ProgContext *ctx) {
     auto node = std::make_shared<ASTRoot>();
     node->pos = 1;
+    std::vector<std::pair<int, std::shared_ptr<ASTNode>>> children;
     for (auto child : ctx->classdeclaration()) {
         visit(child);
         node->classList.push_back(_node);
+        children.push_back(std::make_pair(child->getStart()->getStartIndex(), _node));
     }
     for (auto child : ctx->vardeclaration()) {
         visit(child);
         node->varList.push_back(_node);
+        children.push_back(std::make_pair(child->getStart()->getStartIndex(), _node));
     }
     for (auto child : ctx->functiondeclaration()) {
         visit(child);
         node->funcList.push_back(_node);
+        children.push_back(std::make_pair(child->getStart()->getStartIndex(), _node));
     }
+    std::sort(children.begin(), children.end());
+    for (auto child : children)
+        node->children.push_back(child.second);
     _node = std::dynamic_pointer_cast<ASTNode>(node);
     return nullptr;
 }
@@ -57,8 +64,8 @@ antlrcpp::Any ASTBuilder::visitParameter(Mx_starParser::ParameterContext *ctx) {
     auto node = std::make_shared<ASTVarDecl>();
     visit(ctx->typespecifier());
     node->varType = _type;
-    node->name = ctx->Identifier()->toString();
-    node->initValue = nullptr;
+    node->name.push_back(ctx->Identifier()->toString());
+    node->initValue.push_back(nullptr);
     _node = std::dynamic_pointer_cast<ASTNode>(node);
     return nullptr;
 }
@@ -71,7 +78,8 @@ antlrcpp::Any ASTBuilder::visitBlock(Mx_starParser::BlockContext *ctx) {
     auto node = std::make_shared<ASTBlock>();
     for (auto child : ctx->statement()) {
         visit(child);
-        node->stmts.push_back(_node);
+        if (_node)
+            node->stmts.push_back(_node);
     }
     _node = std::dynamic_pointer_cast<ASTNode>(node);
     return nullptr;
@@ -81,21 +89,32 @@ antlrcpp::Any ASTBuilder::visitVardeclaration(Mx_starParser::VardeclarationConte
     auto node = std::make_shared<ASTVarDecl>();
     visit(ctx->typespecifier());
     node->varType = _type;
-    node->name = ctx->Identifier()->toString();
-    if (ctx->expression()) {
-        visit(ctx->expression());
-        node->initValue = _node;
+    for (auto child : ctx->vardecl()) {
+        visit(child);
+        node->initValue.push_back(_node);
+        node->name.push_back(_name);
     }
     _node = std::dynamic_pointer_cast<ASTNode>(node);
+    return nullptr;
+}
+
+antlrcpp::Any ASTBuilder::visitVardecl(Mx_starParser::VardeclContext *ctx) {
+    if (ctx->expression())
+        visit(ctx->expression());
+    else
+        _node = nullptr;
+    _name = ctx->Identifier()->toString();
     return nullptr;
 }
 
 antlrcpp::Any ASTBuilder::visitIfstatement(Mx_starParser::IfstatementContext *ctx) {
     auto node = std::make_shared<ASTStmtIf>();
     visit(ctx->expression());
-    node->cond = _node;
+    if (_node)
+        node->cond = _node;
     visit(ctx->statement().front());
-    node->thenStmt = _node;
+    if (_node)
+        node->thenStmt = _node;
     if (ctx->statement().size() > 1) {
         visit(ctx->statement().back());
         node->elseStmt = _node;
@@ -110,7 +129,8 @@ antlrcpp::Any ASTBuilder::visitIterationstatement(Mx_starParser::Iterationstatem
         visit(ctx->expression());
         node->cond = _node;
         visit(ctx->statement());
-        node->stmt = _node;
+        if (_node)
+            node->stmt = _node;
         _node = std::dynamic_pointer_cast<ASTNode>(node);
     }
     else {
@@ -133,6 +153,9 @@ antlrcpp::Any ASTBuilder::visitIterationstatement(Mx_starParser::Iterationstatem
         }
         else
             node->incr = nullptr;
+        visit(ctx->statement());
+        if (_node)
+            node->stmt = _node;
         _node = std::dynamic_pointer_cast<ASTNode>(node);
     }
     return nullptr;
@@ -161,8 +184,10 @@ antlrcpp::Any ASTBuilder::visitJumpstatement(Mx_starParser::JumpstatementContext
     }
     else {
         auto node = std::make_shared<ASTStmtReturn>();
-        if (ctx->expression())
+        if (ctx->expression()) {
+            visit(ctx->expression());
             node->retValue = _node;
+        }
         else
             node->retValue = nullptr;
         _node = std::dynamic_pointer_cast<ASTNode>(node);
@@ -179,7 +204,8 @@ antlrcpp::Any ASTBuilder::visitExpressionstatement(Mx_starParser::Expressionstat
 }
 
 antlrcpp::Any ASTBuilder::visitEmptystatement(Mx_starParser::EmptystatementContext *ctx) {
-    return visitChildren(ctx);
+    _node = nullptr;
+    return nullptr;
 }
 
 antlrcpp::Any ASTBuilder::visitExpression(Mx_starParser::ExpressionContext *ctx) {
@@ -404,11 +430,6 @@ antlrcpp::Any ASTBuilder::visitNewexpression(Mx_starParser::NewexpressionContext
     if (ctx->Openbra().size()) {
         for (int i = ctx->expression().size(); i < ctx->Openbra().size(); ++i)
             node->paras.push_back(nullptr);
-        node->isArray = 1;
-    }
-    else {
-        node->isArray = 0;
-        node->name = _type.name;
     }
     _node = std::dynamic_pointer_cast<ASTNode>(node);
     return nullptr;
@@ -429,25 +450,20 @@ antlrcpp::Any ASTBuilder::visitPostfixexpression(Mx_starParser::Postfixexpressio
         auto node = std::make_shared<ASTExprSubscript>();
         visit(ctx->postfixexpression());
         node->array = _node;
-        visit(ctx->expression().front());
+        visit(ctx->expression());
         node->subscript = _node;
-        _node = std::dynamic_pointer_cast<ASTNode>(node);
-    }
-    else if (ctx->Openpar()) {
-        auto node = std::make_shared<ASTExprFuncCall>();
-        visit(ctx->postfixexpression());
-        node->func = _node;
-        for (auto child : ctx->expression()) {
-            visit(child);
-            node->paras.push_back(_node);
-        }
         _node = std::dynamic_pointer_cast<ASTNode>(node);
     }
     else if (ctx->Dot()) {
         auto node = std::make_shared<ASTExprMemberAccess>();
         visit(ctx->postfixexpression());
         node->object = _node;
-        node->member = ctx->Identifier()->toString();
+        if (ctx->Identifier())
+            node->memberVar = ctx->Identifier()->toString();
+        else if (ctx->functioncall()) {
+            visit(ctx->functioncall());
+            node->memberFunc = _node;
+        }
         _node = std::dynamic_pointer_cast<ASTNode>(node);
     }
     else {
@@ -475,6 +491,20 @@ antlrcpp::Any ASTBuilder::visitPrimaryexpression(Mx_starParser::Primaryexpressio
     else if (ctx->literal()) {
         visit(ctx->literal());
     }
+    else {
+        visit(ctx->functioncall());
+    }
+    return nullptr;
+}
+
+antlrcpp::Any ASTBuilder::visitFunctioncall(Mx_starParser::FunctioncallContext *ctx) {
+    auto node = std::make_shared<ASTExprFuncCall>();
+    node->name = ctx->Identifier()->toString();
+    for (auto child : ctx->expression()) {
+        visit(child);
+        node->paras.push_back(_node);
+    }
+    _node = std::dynamic_pointer_cast<ASTNode>(node);
     return nullptr;
 }
 
@@ -515,6 +545,7 @@ antlrcpp::Any ASTBuilder::visitLiteral(Mx_starParser::LiteralContext *ctx) {
         else {
             node->exprType = typeNull;
         }
+        node->valueType = rvalue;
         _node = std::dynamic_pointer_cast<ASTNode>(node);
     }
     return nullptr;
@@ -524,14 +555,18 @@ antlrcpp::Any ASTBuilder::visitBooleanliteral(Mx_starParser::BooleanliteralConte
     auto node = std::make_shared<ASTExprLiteral>();
     node->exprType = typeBool;
     node->bvalue = ctx->True() != nullptr;
+    node->valueType = rvalue;
     _node = std::dynamic_pointer_cast<ASTNode>(node);
     return nullptr;
 }
 
 std::shared_ptr<ASTRoot> ASTBuilder::build(antlr4::tree::ParseTree *tree) {
     visit(tree);
-    return std::dynamic_pointer_cast<ASTRoot>(_node);
+    auto ret = _node;
+    _node.reset();
+    return std::dynamic_pointer_cast<ASTRoot>(ret);
 }
+
 
 
 

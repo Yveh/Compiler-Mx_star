@@ -27,15 +27,15 @@ public:
   enum {
     RuleProg = 0, RuleClassdeclaration = 1, RuleFunctiondeclaration = 2, 
     RuleParameter = 3, RuleStatement = 4, RuleBlock = 5, RuleVardeclaration = 6, 
-    RuleIfstatement = 7, RuleIterationstatement = 8, RuleForinit = 9, RuleForcond = 10, 
-    RuleForincr = 11, RuleJumpstatement = 12, RuleExpressionstatement = 13, 
-    RuleEmptystatement = 14, RuleExpression = 15, RuleLogicalorexpression = 16, 
-    RuleLogicalandexpression = 17, RuleOrexpression = 18, RuleXorexpression = 19, 
-    RuleAndexpression = 20, RuleEqualityexpression = 21, RuleRelationalexpression = 22, 
-    RuleShiftexpression = 23, RuleAdditiveexpression = 24, RuleMultiplicativeexpression = 25, 
-    RuleUnaryexpression = 26, RuleNewexpression = 27, RulePostfixexpression = 28, 
-    RulePrimaryexpression = 29, RuleTypespecifier = 30, RuleSimpletypespecifier = 31, 
-    RuleLiteral = 32, RuleBooleanliteral = 33
+    RuleVardecl = 7, RuleIfstatement = 8, RuleIterationstatement = 9, RuleForinit = 10, 
+    RuleForcond = 11, RuleForincr = 12, RuleJumpstatement = 13, RuleExpressionstatement = 14, 
+    RuleEmptystatement = 15, RuleExpression = 16, RuleLogicalorexpression = 17, 
+    RuleLogicalandexpression = 18, RuleOrexpression = 19, RuleXorexpression = 20, 
+    RuleAndexpression = 21, RuleEqualityexpression = 22, RuleRelationalexpression = 23, 
+    RuleShiftexpression = 24, RuleAdditiveexpression = 25, RuleMultiplicativeexpression = 26, 
+    RuleUnaryexpression = 27, RuleNewexpression = 28, RulePostfixexpression = 29, 
+    RuleFunctioncall = 30, RulePrimaryexpression = 31, RuleTypespecifier = 32, 
+    RuleSimpletypespecifier = 33, RuleLiteral = 34, RuleBooleanliteral = 35
   };
 
   Mx_starParser(antlr4::TokenStream *input);
@@ -55,6 +55,7 @@ public:
   class StatementContext;
   class BlockContext;
   class VardeclarationContext;
+  class VardeclContext;
   class IfstatementContext;
   class IterationstatementContext;
   class ForinitContext;
@@ -77,6 +78,7 @@ public:
   class UnaryexpressionContext;
   class NewexpressionContext;
   class PostfixexpressionContext;
+  class FunctioncallContext;
   class PrimaryexpressionContext;
   class TypespecifierContext;
   class SimpletypespecifierContext;
@@ -213,8 +215,26 @@ public:
     VardeclarationContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     TypespecifierContext *typespecifier();
-    antlr4::tree::TerminalNode *Identifier();
+    std::vector<VardeclContext *> vardecl();
+    VardeclContext* vardecl(size_t i);
     antlr4::tree::TerminalNode *Semicolon();
+    std::vector<antlr4::tree::TerminalNode *> Comma();
+    antlr4::tree::TerminalNode* Comma(size_t i);
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  VardeclarationContext* vardeclaration();
+
+  class  VardeclContext : public antlr4::ParserRuleContext {
+  public:
+    VardeclContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *Identifier();
     antlr4::tree::TerminalNode *Assign();
     ExpressionContext *expression();
 
@@ -225,7 +245,7 @@ public:
    
   };
 
-  VardeclarationContext* vardeclaration();
+  VardeclContext* vardecl();
 
   class  IfstatementContext : public antlr4::ParserRuleContext {
   public:
@@ -621,15 +641,11 @@ public:
     antlr4::tree::TerminalNode *Inc();
     antlr4::tree::TerminalNode *Dec();
     antlr4::tree::TerminalNode *Openbra();
-    std::vector<ExpressionContext *> expression();
-    ExpressionContext* expression(size_t i);
+    ExpressionContext *expression();
     antlr4::tree::TerminalNode *Closebra();
-    antlr4::tree::TerminalNode *Openpar();
-    antlr4::tree::TerminalNode *Closepar();
-    std::vector<antlr4::tree::TerminalNode *> Comma();
-    antlr4::tree::TerminalNode* Comma(size_t i);
     antlr4::tree::TerminalNode *Dot();
     antlr4::tree::TerminalNode *Identifier();
+    FunctioncallContext *functioncall();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -640,6 +656,27 @@ public:
 
   PostfixexpressionContext* postfixexpression();
   PostfixexpressionContext* postfixexpression(int precedence);
+  class  FunctioncallContext : public antlr4::ParserRuleContext {
+  public:
+    FunctioncallContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *Identifier();
+    antlr4::tree::TerminalNode *Openpar();
+    antlr4::tree::TerminalNode *Closepar();
+    std::vector<ExpressionContext *> expression();
+    ExpressionContext* expression(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> Comma();
+    antlr4::tree::TerminalNode* Comma(size_t i);
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  FunctioncallContext* functioncall();
+
   class  PrimaryexpressionContext : public antlr4::ParserRuleContext {
   public:
     PrimaryexpressionContext(antlr4::ParserRuleContext *parent, size_t invokingState);
@@ -650,6 +687,7 @@ public:
     antlr4::tree::TerminalNode *Openpar();
     ExpressionContext *expression();
     antlr4::tree::TerminalNode *Closepar();
+    FunctioncallContext *functioncall();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

@@ -10,15 +10,12 @@ public:
 
 class funcInfo {
 public:
-    type_t funcType, retType;
-    SymbolTable<varInfo> paras;
+    type_t retType;
     std::vector<type_t> parasType;
-    std::vector<std::string> parasName;
 };
 
 class classInfo {
 public:
-    type_t classType;
     SymbolTable<funcInfo> memberFunc;
     SymbolTable<varInfo> memberVar;
 };
@@ -28,4 +25,7 @@ public:
     SymbolTable<funcInfo> funcTable;
     SymbolTable<classInfo> classTable;
     SymbolTable<varInfo> varTable;
+    int inClass = 0, inLoop = 0, inFunc = 0;
+    bool hasReturn = 0;
+    std::string className, funcName;
 };

@@ -43,6 +43,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitVardecl(Mx_starParser::VardeclContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitIfstatement(Mx_starParser::IfstatementContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -128,6 +132,10 @@ public:
   }
 
   virtual antlrcpp::Any visitPostfixexpression(Mx_starParser::PostfixexpressionContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitFunctioncall(Mx_starParser::FunctioncallContext *ctx) override {
     return visitChildren(ctx);
   }
 

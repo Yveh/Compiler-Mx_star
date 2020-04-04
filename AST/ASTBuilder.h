@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <memory>
 
 #include "Mx_starBaseVisitor.h"
@@ -10,6 +11,7 @@ class ASTBuilder : public Mx_starBaseVisitor {
 private:
     std::shared_ptr<ASTNode> _node;
     type_t _type;
+    std::string _name;
 
     virtual antlrcpp::Any visitProg(Mx_starParser::ProgContext *ctx) override;
     virtual antlrcpp::Any visitClassdeclaration(Mx_starParser::ClassdeclarationContext *ctx) override;
@@ -18,6 +20,7 @@ private:
     virtual antlrcpp::Any visitStatement(Mx_starParser::StatementContext *ctx) override;
     virtual antlrcpp::Any visitBlock(Mx_starParser::BlockContext *ctx) override;
     virtual antlrcpp::Any visitVardeclaration(Mx_starParser::VardeclarationContext *ctx) override;
+    virtual antlrcpp::Any visitVardecl(Mx_starParser::VardeclContext *ctx) override;
     virtual antlrcpp::Any visitIfstatement(Mx_starParser::IfstatementContext *ctx) override;
     virtual antlrcpp::Any visitIterationstatement(Mx_starParser::IterationstatementContext *ctx) override;
     virtual antlrcpp::Any visitForinit(Mx_starParser::ForinitContext *ctx) override;
@@ -41,6 +44,7 @@ private:
     virtual antlrcpp::Any visitNewexpression(Mx_starParser::NewexpressionContext *ctx) override;
     virtual antlrcpp::Any visitPostfixexpression(Mx_starParser::PostfixexpressionContext *ctx) override;
     virtual antlrcpp::Any visitPrimaryexpression(Mx_starParser::PrimaryexpressionContext *ctx) override;
+    virtual antlrcpp::Any visitFunctioncall(Mx_starParser::FunctioncallContext *ctx) override;
     virtual antlrcpp::Any visitTypespecifier(Mx_starParser::TypespecifierContext *ctx) override;
     virtual antlrcpp::Any visitSimpletypespecifier(Mx_starParser::SimpletypespecifierContext *ctx) override;
     virtual antlrcpp::Any visitLiteral(Mx_starParser::LiteralContext *ctx) override;

@@ -33,6 +33,8 @@ public:
 
     virtual antlrcpp::Any visitVardeclaration(Mx_starParser::VardeclarationContext *context) = 0;
 
+    virtual antlrcpp::Any visitVardecl(Mx_starParser::VardeclContext *context) = 0;
+
     virtual antlrcpp::Any visitIfstatement(Mx_starParser::IfstatementContext *context) = 0;
 
     virtual antlrcpp::Any visitIterationstatement(Mx_starParser::IterationstatementContext *context) = 0;
@@ -76,6 +78,8 @@ public:
     virtual antlrcpp::Any visitNewexpression(Mx_starParser::NewexpressionContext *context) = 0;
 
     virtual antlrcpp::Any visitPostfixexpression(Mx_starParser::PostfixexpressionContext *context) = 0;
+
+    virtual antlrcpp::Any visitFunctioncall(Mx_starParser::FunctioncallContext *context) = 0;
 
     virtual antlrcpp::Any visitPrimaryexpression(Mx_starParser::PrimaryexpressionContext *context) = 0;
 

@@ -35,6 +35,9 @@ public:
   virtual void enterVardeclaration(Mx_starParser::VardeclarationContext *ctx) = 0;
   virtual void exitVardeclaration(Mx_starParser::VardeclarationContext *ctx) = 0;
 
+  virtual void enterVardecl(Mx_starParser::VardeclContext *ctx) = 0;
+  virtual void exitVardecl(Mx_starParser::VardeclContext *ctx) = 0;
+
   virtual void enterIfstatement(Mx_starParser::IfstatementContext *ctx) = 0;
   virtual void exitIfstatement(Mx_starParser::IfstatementContext *ctx) = 0;
 
@@ -100,6 +103,9 @@ public:
 
   virtual void enterPostfixexpression(Mx_starParser::PostfixexpressionContext *ctx) = 0;
   virtual void exitPostfixexpression(Mx_starParser::PostfixexpressionContext *ctx) = 0;
+
+  virtual void enterFunctioncall(Mx_starParser::FunctioncallContext *ctx) = 0;
+  virtual void exitFunctioncall(Mx_starParser::FunctioncallContext *ctx) = 0;
 
   virtual void enterPrimaryexpression(Mx_starParser::PrimaryexpressionContext *ctx) = 0;
   virtual void exitPrimaryexpression(Mx_starParser::PrimaryexpressionContext *ctx) = 0;

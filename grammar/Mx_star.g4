@@ -34,7 +34,11 @@ block
     ;
 
 vardeclaration
-    : typespecifier Identifier (Assign expression)? Semicolon
+    : typespecifier vardecl (Comma vardecl)* Semicolon
+    ;
+
+vardecl
+    : Identifier (Assign expression)?
     ;
 
 ifstatement
@@ -157,8 +161,11 @@ postfixexpression
     | postfixexpression Inc
     | postfixexpression Dec
     | postfixexpression Openbra expression Closebra
-    | postfixexpression Openpar (expression (Comma expression)*)? Closepar
-    | postfixexpression Dot Identifier
+    | postfixexpression Dot (Identifier | functioncall)
+    ;
+
+functioncall
+    : Identifier Openpar (expression (Comma expression)*)? Closepar
     ;
 
 primaryexpression
@@ -166,6 +173,7 @@ primaryexpression
     | This
     | Identifier
     | Openpar expression Closepar
+    | functioncall
     ;
 
 typespecifier
