@@ -1,3 +1,2 @@
-cd local
 cmake ..
 make
