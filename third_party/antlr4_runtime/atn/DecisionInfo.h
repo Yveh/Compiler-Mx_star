@@ -68,14 +68,14 @@ namespace atn {
     /// <summary>
     /// Gets the minimum lookahead required for any single SLL prediction to
     /// complete for this decision, by reaching a unique prediction, reaching an
-    /// SLL conflict state, or encountering a syntax error.
+    /// SLL conflict state, or encountering a syntax errors.
     /// </summary>
     long long SLL_MinLook = 0;
 
     /// <summary>
     /// Gets the maximum lookahead required for any single SLL prediction to
     /// complete for this decision, by reaching a unique prediction, reaching an
-    /// SLL conflict state, or encountering a syntax error.
+    /// SLL conflict state, or encountering a syntax errors.
     /// </summary>
     long long SLL_MaxLook = 0;
 
@@ -95,7 +95,7 @@ namespace atn {
     /// complete for this decision. An LL prediction completes when the algorithm
     /// reaches a unique prediction, a conflict state (for
     /// <seealso cref="PredictionMode#LL"/>, an ambiguity state (for
-    /// <seealso cref="PredictionMode#LL_EXACT_AMBIG_DETECTION"/>, or a syntax error.
+    /// <seealso cref="PredictionMode#LL_EXACT_AMBIG_DETECTION"/>, or a syntax errors.
     /// </summary>
     long long LL_MinLook = 0;
 
@@ -104,7 +104,7 @@ namespace atn {
     /// complete for this decision. An LL prediction completes when the algorithm
     /// reaches a unique prediction, a conflict state (for
     /// <seealso cref="PredictionMode#LL"/>, an ambiguity state (for
-    /// <seealso cref="PredictionMode#LL_EXACT_AMBIG_DETECTION"/>, or a syntax error.
+    /// <seealso cref="PredictionMode#LL_EXACT_AMBIG_DETECTION"/>, or a syntax errors.
     /// </summary>
     long long LL_MaxLook = 0;
 

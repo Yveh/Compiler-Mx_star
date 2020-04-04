@@ -178,7 +178,7 @@ namespace dfa {
     /// </summary>
     /// <param name="tokenType"> The token type.
     /// </param>
-    /// <returns> The display name of the token type, for use in error reporting or
+    /// <returns> The display name of the token type, for use in errors reporting or
     /// other user-visible messages which reference specific token types. </returns>
     virtual std::string getDisplayName(size_t tokenType) const;
 

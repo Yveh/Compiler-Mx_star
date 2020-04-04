@@ -171,11 +171,11 @@ size_t ParserATNSimulator::execATN(dfa::DFA &dfa, dfa::DFAState *s0, TokenStream
       // means that input up to t actually finished entry rule
       // at least for SLL decision. Full LL doesn't dip into outer
       // so don't need special case.
-      // We will get an error no matter what so delay until after
-      // decision; better error message. Also, no reachable target
+      // We will get an errors no matter what so delay until after
+      // decision; better errors message. Also, no reachable target
       // ATN states in SLL implies LL will also get nowhere.
       // If conflict in states that dip out, choose min since we
-      // will get error no matter what.
+      // will get errors no matter what.
       NoViableAltException e = noViableAlt(input, outerContext, previousD->configs.get(), startIndex, false);
       input->seek(startIndex);
       size_t alt = getSynValidOrSemInvalidAltThatFinishedDecisionEntryRule(previousD->configs.get(), outerContext);
@@ -187,7 +187,7 @@ size_t ParserATNSimulator::execATN(dfa::DFA &dfa, dfa::DFAState *s0, TokenStream
     }
 
     if (D->requiresFullContext && _mode != PredictionMode::SLL) {
-      // IF PREDS, MIGHT RESOLVE TO SINGLE ALT => SLL (or syntax error)
+      // IF PREDS, MIGHT RESOLVE TO SINGLE ALT => SLL (or syntax errors)
       BitSet conflictingAlts;
       if (D->predicates.size() != 0) {
 #if DEBUG_ATN == 1
@@ -346,11 +346,11 @@ size_t ParserATNSimulator::execATNWithFullContext(dfa::DFA &dfa, dfa::DFAState *
       // means that input up to t actually finished entry rule
       // at least for LL decision. Full LL doesn't dip into outer
       // so don't need special case.
-      // We will get an error no matter what so delay until after
-      // decision; better error message. Also, no reachable target
+      // We will get an errors no matter what so delay until after
+      // decision; better errors message. Also, no reachable target
       // ATN states in SLL implies LL will also get nowhere.
       // If conflict in states that dip out, choose min since we
-      // will get error no matter what.
+      // will get errors no matter what.
       NoViableAltException e = noViableAlt(input, outerContext, previous, startIndex, previous != s0);
       input->seek(startIndex);
       size_t alt = getSynValidOrSemInvalidAltThatFinishedDecisionEntryRule(previous, outerContext);

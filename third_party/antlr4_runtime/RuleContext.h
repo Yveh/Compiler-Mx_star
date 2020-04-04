@@ -51,7 +51,7 @@ namespace antlr4 {
    *  to this rule. To invoke a rule, we must always have a current context.
    *
    *  The parent contexts are useful for computing lookahead sets and
-   *  getting error information.
+   *  getting errors information.
    *
    *  These objects are used during parsing and prediction.
    *  For the special case of parsers, we use the subclass

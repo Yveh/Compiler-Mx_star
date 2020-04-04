@@ -13,7 +13,7 @@ namespace atn {
   /// The last node in the ATN for a rule, unless that rule is the start symbol.
   /// In that case, there is one transition to EOF. Later, we might encode
   /// references to all calls to this rule to compute FOLLOW sets for
-  /// error handling.
+  /// errors handling.
   class ANTLR4CPP_PUBLIC RuleStopState final : public ATNState {
 
   public:

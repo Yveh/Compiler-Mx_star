@@ -592,12 +592,16 @@ public:
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *New();
     SimpletypespecifierContext *simpletypespecifier();
-    std::vector<antlr4::tree::TerminalNode *> Openbra();
-    antlr4::tree::TerminalNode* Openbra(size_t i);
+    antlr4::tree::TerminalNode *Openpar();
+    antlr4::tree::TerminalNode *Closepar();
     std::vector<ExpressionContext *> expression();
     ExpressionContext* expression(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> Openbra();
+    antlr4::tree::TerminalNode* Openbra(size_t i);
     std::vector<antlr4::tree::TerminalNode *> Closebra();
     antlr4::tree::TerminalNode* Closebra(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> Comma();
+    antlr4::tree::TerminalNode* Comma(size_t i);
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

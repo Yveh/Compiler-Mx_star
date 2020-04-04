@@ -199,7 +199,7 @@ dfa::DFAState *LexerATNSimulator::getExistingTargetState(dfa::DFAState *s, size_
 }
 
 dfa::DFAState *LexerATNSimulator::computeTargetState(CharStream *input, dfa::DFAState *s, size_t t) {
-  OrderedATNConfigSet *reach = new OrderedATNConfigSet(); /* mem-check: deleted on error or managed by new DFA state. */
+  OrderedATNConfigSet *reach = new OrderedATNConfigSet(); /* mem-check: deleted on errors or managed by new DFA state. */
 
   // if we don't find an existing DFA state
   // Fill reach starting from closure, following t transitions

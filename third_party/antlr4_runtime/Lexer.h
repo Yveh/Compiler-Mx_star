@@ -14,7 +14,7 @@ namespace antlr4 {
 
   /// A lexer is recognizer that draws input symbols from a character stream.
   /// lexer grammars result in a subclass of this object. A Lexer object
-  /// uses simplified match() and error recovery mechanisms in the interest
+  /// uses simplified match() and errors recovery mechanisms in the interest
   /// of speed.
   class ANTLR4CPP_PUBLIC Lexer : public Recognizer, public TokenSource {
   public:
@@ -173,7 +173,7 @@ namespace antlr4 {
     /// Lexers can normally match any char in it's vocabulary after matching
     /// a token, so do the easy thing and just kill a character and hope
     /// it all works out.  You can instead use the rule invocation stack
-    /// to do sophisticated error recovery if you are in a fragment rule.
+    /// to do sophisticated errors recovery if you are in a fragment rule.
     virtual void recover(RecognitionException *re);
 
     /// <summary>

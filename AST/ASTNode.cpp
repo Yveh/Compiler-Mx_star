@@ -1,12 +1,12 @@
 #include "ASTNode.h"
 
 void ASTRoot::accept(ASTVisitor *visitor) {
-//    for (auto child : varList)
-//        visitor->visit(std::dynamic_pointer_cast<ASTVarDecl>(child));
-//    for (auto child : funcList)
-//        visitor->visit(std::dynamic_pointer_cast<ASTFuncDecl>(child));
-//    for (auto child : classList)
-//        visitor->visit(std::dynamic_pointer_cast<ASTClassDecl>(child));
+    for (auto child : varList)
+        visitor->visit(std::dynamic_pointer_cast<ASTVarDecl>(child));
+    for (auto child : funcList)
+        visitor->visit(std::dynamic_pointer_cast<ASTFuncDecl>(child));
+    for (auto child : classList)
+        visitor->visit(std::dynamic_pointer_cast<ASTClassDecl>(child));
 }
 
 void ASTStmtBreak::accept(ASTVisitor *visitor) {}

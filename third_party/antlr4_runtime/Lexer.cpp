@@ -80,7 +80,7 @@ std::unique_ptr<Token> Lexer::nextToken() {
       try {
         ttype = getInterpreter<atn::LexerATNSimulator>()->match(_input, mode);
       } catch (LexerNoViableAltException &e) {
-        notifyListeners(e); // report error
+        notifyListeners(e); // report errors
         recover(e);
         ttype = SKIP;
       }
@@ -245,7 +245,7 @@ void Lexer::recover(const LexerNoViableAltException &/*e*/) {
 void Lexer::notifyListeners(const LexerNoViableAltException & /*e*/) {
   ++_syntaxErrors;
   std::string text = _input->getText(misc::Interval(tokenStartCharIndex, _input->index()));
-  std::string msg = std::string("token recognition error at: '") + getErrorDisplay(text) + std::string("'");
+  std::string msg = std::string("token recognition errors at: '") + getErrorDisplay(text) + std::string("'");
 
   ProxyErrorListener &listener = getErrorListenerDispatch();
   listener.syntaxError(this, nullptr, tokenStartLine, tokenStartCharPositionInLine, msg, std::current_exception());

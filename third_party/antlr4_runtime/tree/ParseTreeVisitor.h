@@ -45,7 +45,7 @@ namespace tree {
     virtual antlrcpp::Any visitTerminal(TerminalNode *node) = 0;
 
     /// <summary>
-    /// Visit an error node, and return a user-defined result of the operation.
+    /// Visit an errors node, and return a user-defined result of the operation.
     /// </summary>
     /// <param name="node"> The <seealso cref="ErrorNode"/> to visit. </param>
     /// <returns> The result of visiting the node. </returns>

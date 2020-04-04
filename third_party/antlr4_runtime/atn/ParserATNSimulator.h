@@ -83,7 +83,7 @@ namespace atn {
    *
    * <p>
    * Something should be done for left-recursive expression predictions. They are
-   * likely LL(1) + pred eval. Easier to do the whole SLL unless error and retry
+   * likely LL(1) + pred eval. Easier to do the whole SLL unless errors and retry
    * with full LL thing Sam does.</p>
    *
    * <p>
@@ -198,9 +198,9 @@ namespace atn {
    * Parsing)</strong></p>
    *
    * <p>
-   * Sam pointed out that if SLL does not give a syntax error, then there is no
+   * Sam pointed out that if SLL does not give a syntax errors, then there is no
    * point in doing full LL, which is slower. We only have to try LL if we get a
-   * syntax error. For maximum speed, Sam starts the parser set to pure SLL
+   * syntax errors. For maximum speed, Sam starts the parser set to pure SLL
    * mode with the {@link BailErrorStrategy}:</p>
    *
    * <pre>
@@ -209,8 +209,8 @@ namespace atn {
    * </pre>
    *
    * <p>
-   * If it does not get a syntax error, then we're done. If it does get a syntax
-   * error, we need to retry with the combined SLL/LL strategy.</p>
+   * If it does not get a syntax errors, then we're done. If it does get a syntax
+   * errors, we need to retry with the combined SLL/LL strategy.</p>
    *
    * <p>
    * The reason this works is as follows. If there are no SLL conflicts, then the
@@ -222,7 +222,7 @@ namespace atn {
    * is truly ambiguous on the current input. If the LL set is smaller, then the
    * SLL conflict resolution might choose an alternative that the full LL would
    * rule out as a possibility based upon better context information. If that's
-   * the case, then the SLL parse will definitely get an error because the full LL
+   * the case, then the SLL parse will definitely get an errors because the full LL
    * analysis says it's not viable. If SLL conflict resolution chooses an
    * alternative within the LL set, them both SLL and LL would choose the same
    * alternative because they both choose the minimum of multiple conflicting
@@ -231,14 +231,14 @@ namespace atn {
    * <p>
    * Let's say we have a set of SLL conflicting alternatives {@code {1, 2, 3}} and
    * a smaller LL set called <em>s</em>. If <em>s</em> is {@code {2, 3}}, then SLL
-   * parsing will get an error because SLL will pursue alternative 1. If
+   * parsing will get an errors because SLL will pursue alternative 1. If
    * <em>s</em> is {@code {1, 2}} or {@code {1, 3}} then both SLL and LL will
    * choose the same alternative because alternative one is the minimum of either
    * set. If <em>s</em> is {@code {2}} or {@code {3}} then SLL will get a syntax
-   * error. If <em>s</em> is {@code {1}} then SLL will succeed.</p>
+   * errors. If <em>s</em> is {@code {1}} then SLL will succeed.</p>
    *
    * <p>
-   * Of course, if the input is invalid, then we will get an error for sure in
+   * Of course, if the input is invalid, then we will get an errors for sure in
    * both SLL and LL parsing. Erroneous input will therefore require 2 passes over
    * the input.</p>
    */
@@ -655,7 +655,7 @@ namespace atn {
                                                                                 std::vector<Ref<SemanticContext>> const& altToPred);
 
     /**
-     * This method is used to improve the localization of error messages by
+     * This method is used to improve the localization of errors messages by
      * choosing an alternative rather than throwing a
      * {@link NoViableAltException} in particular prediction scenarios where the
      * {@link #ERROR} state was reached during ATN simulation.
@@ -665,7 +665,7 @@ namespace atn {
      * algorithm to identify an ATN configuration which successfully parsed the
      * decision entry rule. Choosing such an alternative ensures that the
      * {@link ParserRuleContext} returned by the calling rule will be complete
-     * and valid, and the syntax error will be reported later at a more
+     * and valid, and the syntax errors will be reported later at a more
      * localized location.</p>
      *
      * <ul>
@@ -698,7 +698,7 @@ namespace atn {
      *
      * @return The value to return from {@link #adaptivePredict}, or
      * {@link ATN#INVALID_ALT_NUMBER} if a suitable alternative was not
-     * identified and {@link #adaptivePredict} should report an error instead.
+     * identified and {@link #adaptivePredict} should report an errors instead.
      */
     size_t getSynValidOrSemInvalidAltThatFinishedDecisionEntryRule(ATNConfigSet *configs,
                                                                    ParserRuleContext *outerContext);

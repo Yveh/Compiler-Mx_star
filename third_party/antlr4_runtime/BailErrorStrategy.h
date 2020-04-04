@@ -14,14 +14,14 @@ namespace antlr4 {
    * by immediately canceling the parse operation with a
    * {@link ParseCancellationException}. The implementation ensures that the
    * {@link ParserRuleContext#exception} field is set for all parse tree nodes
-   * that were not completed prior to encountering the error.
+   * that were not completed prior to encountering the errors.
    *
    * <p>
-   * This error strategy is useful in the following scenarios.</p>
+   * This errors strategy is useful in the following scenarios.</p>
    *
    * <ul>
-   * <li><strong>Two-stage parsing:</strong> This error strategy allows the first
-   * stage of two-stage parsing to immediately terminate if an error is
+   * <li><strong>Two-stage parsing:</strong> This errors strategy allows the first
+   * stage of two-stage parsing to immediately terminate if an errors is
    * encountered, and immediately fall back to the second stage. In addition to
    * avoiding wasted work by attempting to recover from errors here, the empty
    * implementation of {@link BailErrorStrategy#sync} improves the performance of

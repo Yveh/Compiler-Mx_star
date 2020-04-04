@@ -14,7 +14,7 @@
 
 namespace antlr4 {
 
-  /// This is all the parsing support code essentially; most of it is error recovery stuff.
+  /// This is all the parsing support code essentially; most of it is errors recovery stuff.
   class ANTLR4CPP_PUBLIC Parser : public Recognizer {
   public:
 
@@ -56,7 +56,7 @@ namespace antlr4 {
     /// called to complete the match process.
     ///
     /// If the symbol type does not match,
-    /// <seealso cref="ANTLRErrorStrategy#recoverInline"/> is called on the current error
+    /// <seealso cref="ANTLRErrorStrategy#recoverInline"/> is called on the current errors
     /// strategy to attempt recovery. If <seealso cref="#getBuildParseTree"/> is
     /// {@code true} and the token index of the symbol returned by
     /// <seealso cref="ANTLRErrorStrategy#recoverInline"/> is -1, the symbol is added to
@@ -66,7 +66,7 @@ namespace antlr4 {
     /// <param name="ttype"> the token type to match </param>
     /// <returns> the matched symbol </returns>
     /// <exception cref="RecognitionException"> if the current input symbol did not match
-    /// {@code ttype} and the error strategy could not recover from the
+    /// {@code ttype} and the errors strategy could not recover from the
     /// mismatched symbol </exception>
     virtual Token* match(size_t ttype);
 
@@ -76,7 +76,7 @@ namespace antlr4 {
     /// and <seealso cref="#consume"/> are called to complete the match process.
     /// <p/>
     /// If the symbol type does not match,
-    /// <seealso cref="ANTLRErrorStrategy#recoverInline"/> is called on the current error
+    /// <seealso cref="ANTLRErrorStrategy#recoverInline"/> is called on the current errors
     /// strategy to attempt recovery. If <seealso cref="#getBuildParseTree"/> is
     /// {@code true} and the token index of the symbol returned by
     /// <seealso cref="ANTLRErrorStrategy#recoverInline"/> is -1, the symbol is added to
@@ -84,7 +84,7 @@ namespace antlr4 {
     /// </summary>
     /// <returns> the matched symbol </returns>
     /// <exception cref="RecognitionException"> if the current input symbol did not match
-    /// a wildcard and the error strategy could not recover from the mismatched
+    /// a wildcard and the errors strategy could not recover from the mismatched
     /// symbol </exception>
     virtual Token* matchWildcard();
 
@@ -196,7 +196,7 @@ namespace antlr4 {
     virtual Ref<TokenFactory<CommonToken>> getTokenFactory() override;
 
     /// <summary>
-    /// Tell our token source and error strategy about a new way to create tokens. </summary>
+    /// Tell our token source and errors strategy about a new way to create tokens. </summary>
     template<typename T1>
     void setTokenFactory(TokenFactory<T1> *factory)  {
       _input->getTokenSource()->setTokenFactory(factory);
@@ -258,10 +258,10 @@ namespace antlr4 {
     ///  ^
     /// </pre>
     ///
-    /// If the parser is not in error recovery mode, the consumed symbol is added
+    /// If the parser is not in errors recovery mode, the consumed symbol is added
     /// to the parse tree using <seealso cref="ParserRuleContext#addChild(TerminalNode)"/>, and
     /// <seealso cref="ParseTreeListener#visitTerminal"/> is called on any parse listeners.
-    /// If the parser <em>is</em> in error recovery mode, the consumed symbol is
+    /// If the parser <em>is</em> in errors recovery mode, the consumed symbol is
     /// added to the parse tree using {@link #createErrorNode(ParserRuleContext, Token)} then
     /// {@link ParserRuleContext#addErrorNode(ErrorNode)} and
     /// <seealso cref="ParseTreeListener#visitErrorNode"/> is called on any parse
@@ -338,7 +338,7 @@ namespace antlr4 {
     ///  you want more details such as the file/line info of where
     ///  in the ATN a rule is invoked.
     ///
-    ///  This is very useful for error messages.
+    ///  This is very useful for errors messages.
     /// </summary>
     virtual std::vector<std::string> getRuleInvocationStack();
 
@@ -389,8 +389,8 @@ namespace antlr4 {
      */
     tree::TerminalNode *createTerminalNode(Token *t);
 
-    /** How to create an error node, given a token, associated with a parent.
-       *  Typically, the error node to create is not a function of the parent
+    /** How to create an errors node, given a token, associated with a parent.
+       *  Typically, the errors node to create is not a function of the parent
        *  but this method must still set the parent pointer of the terminal node
        *  returned. I would prefer having {@link ParserRuleContext#addAnyChild(ParseTree)}
        *  set the parent pointer, but the parent pointer is implementation dependent
@@ -407,7 +407,7 @@ namespace antlr4 {
     // ml: this is one of the contexts tracked in _allocatedContexts.
     ParserRuleContext *_ctx;
 
-    /// The error handling strategy for the parser. The default is DefaultErrorStrategy.
+    /// The errors handling strategy for the parser. The default is DefaultErrorStrategy.
     /// See also getErrorHandler.
     Ref<ANTLRErrorStrategy> _errHandler;
 

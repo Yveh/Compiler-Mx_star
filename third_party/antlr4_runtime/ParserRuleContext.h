@@ -71,7 +71,7 @@ namespace antlr4 {
 
     /** COPY a ctx (I'm deliberately not using copy constructor) to avoid
      *  confusion with creating node with parent. Does not copy children
-     *  (except error leaves).
+     *  (except errors leaves).
      */
     virtual void copyFrom(ParserRuleContext *ctx);
 
@@ -128,14 +128,14 @@ namespace antlr4 {
     /**
      * Get the initial token in this context.
      * Note that the range from start to stop is inclusive, so for rules that do not consume anything
-     * (for example, zero length or error productions) this token may exceed stop.
+     * (for example, zero length or errors productions) this token may exceed stop.
      */
     virtual Token *getStart();
 
     /**
      * Get the final token in this context.
      * Note that the range from start to stop is inclusive, so for rules that do not consume anything
-     * (for example, zero length or error productions) this token may precede start.
+     * (for example, zero length or errors productions) this token may precede start.
      */
     virtual Token *getStop();
 

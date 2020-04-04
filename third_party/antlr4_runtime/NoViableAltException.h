@@ -14,10 +14,10 @@ namespace antlr4 {
   /// Indicates that the parser could not decide which of two or more paths
   /// to take based upon the remaining input. It tracks the starting token
   /// of the offending input and also knows where the parser was
-  /// in the various paths when the error. Reported by reportNoViableAlternative()
+  /// in the various paths when the errors. Reported by reportNoViableAlternative()
   class ANTLR4CPP_PUBLIC NoViableAltException : public RecognitionException {
   public:
-    NoViableAltException(Parser *recognizer); // LL(1) error
+    NoViableAltException(Parser *recognizer); // LL(1) errors
     NoViableAltException(Parser *recognizer, TokenStream *input,Token *startToken,
       Token *offendingToken, atn::ATNConfigSet *deadEndConfigs, ParserRuleContext *ctx, bool deleteConfigs);
     ~NoViableAltException();
@@ -33,7 +33,7 @@ namespace antlr4 {
 
     /// The token object at the start index; the input stream might
     /// not be buffering tokens so get a reference to it. (At the
-    /// time the error occurred, of course the stream needs to keep a
+    /// time the errors occurred, of course the stream needs to keep a
     /// buffer all of the tokens but later we might not have access to those.)
     Token *_startToken;
 

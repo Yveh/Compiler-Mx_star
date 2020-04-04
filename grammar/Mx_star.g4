@@ -149,7 +149,7 @@ unaryexpression
     ;
 
 newexpression
-    : New simpletypespecifier (Openbra expression Closebra)* (Openbra Closebra)*
+    : New simpletypespecifier ((Openpar (expression (Comma expression)*)? Closepar) | ((Openbra expression Closebra)* (Openbra Closebra)*))
     ;
 
 postfixexpression

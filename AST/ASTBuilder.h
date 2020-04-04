@@ -4,17 +4,12 @@
 
 #include "Mx_starBaseVisitor.h"
 #include "ASTNode.h"
-#include "types.h"
+#include "Types.h"
 
 class ASTBuilder : public Mx_starBaseVisitor {
 private:
     std::shared_ptr<ASTNode> _node;
     type_t _type;
-public:
-    std::shared_ptr<ASTRoot> build(antlr4::tree::ParseTree* tree) {
-        visit(tree);
-        return std::dynamic_pointer_cast<ASTRoot>(_node);
-    }
 
     virtual antlrcpp::Any visitProg(Mx_starParser::ProgContext *ctx) override;
     virtual antlrcpp::Any visitClassdeclaration(Mx_starParser::ClassdeclarationContext *ctx) override;
@@ -50,4 +45,6 @@ public:
     virtual antlrcpp::Any visitSimpletypespecifier(Mx_starParser::SimpletypespecifierContext *ctx) override;
     virtual antlrcpp::Any visitLiteral(Mx_starParser::LiteralContext *ctx) override;
     virtual antlrcpp::Any visitBooleanliteral(Mx_starParser::BooleanliteralContext *ctx) override;
+public:
+    std::shared_ptr<ASTRoot> build(antlr4::tree::ParseTree* tree);
 };

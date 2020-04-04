@@ -1,17 +1,19 @@
 #pragma once
 
 #include "SymbolTable.h"
-#include "types.h"
-
-class funcInfo {
-public:
-    type_t funcType, retType;
-    std::vector<type_t> parasType;
-};
+#include "Types.h"
 
 class varInfo {
 public:
     type_t varType;
+};
+
+class funcInfo {
+public:
+    type_t funcType, retType;
+    SymbolTable<varInfo> paras;
+    std::vector<type_t> parasType;
+    std::vector<std::string> parasName;
 };
 
 class classInfo {

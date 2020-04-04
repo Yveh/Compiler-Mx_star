@@ -44,7 +44,7 @@ namespace antlr4 {
    * Because operations never actually alter the buffer, you may always get the
    * original token stream back without undoing anything. Since the instructions
    * are queued up, you can easily simulate transactions and roll back any changes
-   * if there is an error just by removing instructions. For example,</p>
+   * if there is an errors just by removing instructions. For example,</p>
    *
    * <pre>
    * CharStream input = new ANTLRFileStream("input");

@@ -12,7 +12,7 @@ namespace antlr4 {
 
   /**
    * This is the default implementation of {@link ANTLRErrorStrategy} used for
-   * error reporting and recovery in ANTLR parsers.
+   * errors reporting and recovery in ANTLR parsers.
    */
   class ANTLR4CPP_PUBLIC DefaultErrorStrategy : public ANTLRErrorStrategy {
   public:
@@ -24,17 +24,17 @@ namespace antlr4 {
 
   protected:
     /**
-     * Indicates whether the error strategy is currently "recovering from an
-     * error". This is used to suppress reporting multiple error messages while
-     * attempting to recover from a detected syntax error.
+     * Indicates whether the errors strategy is currently "recovering from an
+     * errors". This is used to suppress reporting multiple errors messages while
+     * attempting to recover from a detected syntax errors.
      *
      * @see #inErrorRecoveryMode
      */
     bool errorRecoveryMode;
 
-    /** The index into the input stream where the last error occurred.
-     * 	This is used to prevent infinite loops where an error is found
-     *  but no token is consumed during recovery...another error is found,
+    /** The index into the input stream where the last errors occurred.
+     * 	This is used to prevent infinite loops where an errors is found
+     *  but no token is consumed during recovery...another errors is found,
      *  ad nauseum.  This is a failsafe mechanism to guarantee that at least
      *  one token/tree node is consumed for two errors.
      */
@@ -46,13 +46,13 @@ namespace antlr4 {
     /// {@inheritDoc}
     /// <p/>
     /// The default implementation simply calls <seealso cref="#endErrorCondition"/> to
-    /// ensure that the handler is not in error recovery mode.
+    /// ensure that the handler is not in errors recovery mode.
     /// </summary>
   public:
     virtual void reset(Parser *recognizer) override;
 
     /// <summary>
-    /// This method is called to enter error recovery mode when a recognition
+    /// This method is called to enter errors recovery mode when a recognition
     /// exception is reported.
     /// </summary>
     /// <param name="recognizer"> the parser instance </param>
@@ -66,7 +66,7 @@ namespace antlr4 {
     virtual bool inErrorRecoveryMode(Parser *recognizer) override;
 
     /// <summary>
-    /// This method is called to leave error recovery mode after recovering from
+    /// This method is called to leave errors recovery mode after recovering from
     /// a recognition exception.
     /// </summary>
     /// <param name="recognizer"> </param>
@@ -84,7 +84,7 @@ namespace antlr4 {
     /// {@inheritDoc}
     /// <p/>
     /// The default implementation returns immediately if the handler is already
-    /// in error recovery mode. Otherwise, it calls <seealso cref="#beginErrorCondition"/>
+    /// in errors recovery mode. Otherwise, it calls <seealso cref="#beginErrorCondition"/>
     /// and dispatches the reporting task based on the runtime type of {@code e}
     /// according to the following table.
     ///
@@ -123,9 +123,9 @@ namespace antlr4 {
      * sync : {consume to what can follow sync} ;
      * </pre>
      *
-     * At the start of a sub rule upon error, {@link #sync} performs single
+     * At the start of a sub rule upon errors, {@link #sync} performs single
      * token deletion, if possible. If it can't do that, it bails on the current
-     * rule and uses the default error recovery, which consumes until the
+     * rule and uses the default errors recovery, which consumes until the
      * resynchronization set of the current rule.
      *
      * <p>If the sub rule is optional ({@code (...)?}, {@code (...)*}, or block
@@ -189,19 +189,19 @@ namespace antlr4 {
     virtual void reportFailedPredicate(Parser *recognizer, const FailedPredicateException &e);
 
     /**
-     * This method is called to report a syntax error which requires the removal
+     * This method is called to report a syntax errors which requires the removal
      * of a token from the input stream. At the time this method is called, the
      * erroneous symbol is current {@code LT(1)} symbol and has not yet been
      * removed from the input stream. When this method returns,
-     * {@code recognizer} is in error recovery mode.
+     * {@code recognizer} is in errors recovery mode.
      *
      * <p>This method is called when {@link #singleTokenDeletion} identifies
      * single-token deletion as a viable recovery strategy for a mismatched
-     * input error.</p>
+     * input errors.</p>
      *
      * <p>The default implementation simply returns if the handler is already in
-     * error recovery mode. Otherwise, it calls {@link #beginErrorCondition} to
-     * enter error recovery mode, followed by calling
+     * errors recovery mode. Otherwise, it calls {@link #beginErrorCondition} to
+     * enter errors recovery mode, followed by calling
      * {@link Parser#notifyErrorListeners}.</p>
      *
      * @param recognizer the parser instance
@@ -209,18 +209,18 @@ namespace antlr4 {
     virtual void reportUnwantedToken(Parser *recognizer);
 
     /**
-     * This method is called to report a syntax error which requires the
+     * This method is called to report a syntax errors which requires the
      * insertion of a missing token into the input stream. At the time this
      * method is called, the missing token has not yet been inserted. When this
-     * method returns, {@code recognizer} is in error recovery mode.
+     * method returns, {@code recognizer} is in errors recovery mode.
      *
      * <p>This method is called when {@link #singleTokenInsertion} identifies
      * single-token insertion as a viable recovery strategy for a mismatched
-     * input error.</p>
+     * input errors.</p>
      *
      * <p>The default implementation simply returns if the handler is already in
-     * error recovery mode. Otherwise, it calls {@link #beginErrorCondition} to
-     * enter error recovery mode, followed by calling
+     * errors recovery mode. Otherwise, it calls {@link #beginErrorCondition} to
+     * enter errors recovery mode, followed by calling
      * {@link Parser#notifyErrorListeners}.</p>
      *
      * @param recognizer the parser instance
@@ -281,10 +281,10 @@ namespace antlr4 {
     virtual Token* recoverInline(Parser *recognizer) override;
 
     /// <summary>
-    /// This method implements the single-token insertion inline error recovery
+    /// This method implements the single-token insertion inline errors recovery
     /// strategy. It is called by <seealso cref="#recoverInline"/> if the single-token
     /// deletion strategy fails to recover from the mismatched input. If this
-    /// method returns {@code true}, {@code recognizer} will be in error recovery
+    /// method returns {@code true}, {@code recognizer} will be in errors recovery
     /// mode.
     /// <p/>
     /// This method determines whether or not single-token insertion is viable by
@@ -300,15 +300,15 @@ namespace antlr4 {
     virtual bool singleTokenInsertion(Parser *recognizer);
 
     /// <summary>
-    /// This method implements the single-token deletion inline error recovery
+    /// This method implements the single-token deletion inline errors recovery
     /// strategy. It is called by <seealso cref="#recoverInline"/> to attempt to recover
-    /// from mismatched input. If this method returns null, the parser and error
+    /// from mismatched input. If this method returns null, the parser and errors
     /// handler state will not have changed. If this method returns non-null,
-    /// {@code recognizer} will <em>not</em> be in error recovery mode since the
+    /// {@code recognizer} will <em>not</em> be in errors recovery mode since the
     /// returned token was a successful match.
     /// <p/>
     /// If the single-token deletion is successful, this method calls
-    /// <seealso cref="#reportUnwantedToken"/> to report the error, followed by
+    /// <seealso cref="#reportUnwantedToken"/> to report the errors, followed by
     /// <seealso cref="Parser#consume"/> to actually "delete" the extraneous token. Then,
     /// before returning <seealso cref="#reportMatch"/> is called to signal a successful
     /// match.
@@ -320,7 +320,7 @@ namespace antlr4 {
     virtual Token* singleTokenDeletion(Parser *recognizer);
 
     /// <summary>
-    /// Conjure up a missing token during error recovery.
+    /// Conjure up a missing token during errors recovery.
     ///
     ///  The recognizer attempts to recover from single missing
     ///  symbols. But, actions might refer to that missing symbol.
@@ -344,7 +344,7 @@ namespace antlr4 {
     virtual misc::IntervalSet getExpectedTokens(Parser *recognizer);
 
     /// <summary>
-    /// How should a token be displayed in an error message? The default
+    /// How should a token be displayed in an errors message? The default
     ///  is to display just the text, but during development you might
     ///  want to have a lot of information spit out.  Override in that case
     ///  to use t.toString() (which, for CommonToken, dumps everything about
@@ -360,7 +360,7 @@ namespace antlr4 {
 
     virtual std::string escapeWSAndQuote(const std::string &s) const;
 
-    /*  Compute the error recovery set for the current rule.  During
+    /*  Compute the errors recovery set for the current rule.  During
      *  rule invocation, the parser pushes the set of tokens that can
      *  follow that rule reference on the stack; this amounts to
      *  computing FIRST of what follows the rule reference in the
@@ -412,7 +412,7 @@ namespace antlr4 {
      *  been called from a different context in rule a for ')' to be
      *  included.
      *
-     *  For error recovery, we cannot consider FOLLOW(c)
+     *  For errors recovery, we cannot consider FOLLOW(c)
      *  (context-sensitive or otherwise).  We need the combined set of
      *  all context-sensitive FOLLOW sets--the set of all tokens that
      *  could follow any reference in the call chain.  We need to
@@ -420,9 +420,9 @@ namespace antlr4 {
      *  we resync'd to that token, we'd consume until EOF.  We need to
      *  sync to context-sensitive FOLLOWs for a, b, and c: {']','^'}.
      *  In this case, for input "[]", LA(1) is ']' and in the set, so we would
-     *  not consume anything. After printing an error, rule c would
+     *  not consume anything. After printing an errors, rule c would
      *  return normally.  Rule b would not find the required '^' though.
-     *  At this point, it gets a mismatched token error and throws an
+     *  At this point, it gets a mismatched token errors and throws an
      *  exception (since LA(1) is not in the viable following token
      *  set).  The rule exception handler tries to recover, but finds
      *  the same recovery set and doesn't consume anything.  Rule b
@@ -434,13 +434,13 @@ namespace antlr4 {
      *
      *  Errors are not generated in errorRecovery mode.
      *
-     *  ANTLR's error recovery mechanism is based upon original ideas:
+     *  ANTLR's errors recovery mechanism is based upon original ideas:
      *
      *  "Algorithms + Data Structures = Programs" by Niklaus Wirth
      *
      *  and
      *
-     *  "A note on error recovery in recursive descent parsers":
+     *  "A note on errors recovery in recursive descent parsers":
      *  http://portal.acm.org/citation.cfm?id=947902.947905
      *
      *  Later, Josef Grosch had some good ideas:
@@ -450,7 +450,7 @@ namespace antlr4 {
      *  ftp://www.cocolab.com/products/cocktail/doca4.ps/ell.ps.zip
      *
      *  Like Grosch I implement context-sensitive FOLLOW sets that are combined
-     *  at run-time upon error to avoid overhead during parsing.
+     *  at run-time upon errors to avoid overhead during parsing.
      */
     virtual misc::IntervalSet getErrorRecoverySet(Parser *recognizer);
 

@@ -96,7 +96,7 @@ std::unique_ptr<ATNConfigSet> ProfilingATNSimulator::computeReachSet(ATNConfigSe
 
   std::unique_ptr<ATNConfigSet> reachConfigs = ParserATNSimulator::computeReachSet(closure, t, fullCtx);
   if (fullCtx) {
-    _decisions[_currentDecision].LL_ATNTransitions++; // count computation even if error
+    _decisions[_currentDecision].LL_ATNTransitions++; // count computation even if errors
     if (reachConfigs != nullptr) {
     } else { // no reach on current lookahead symbol. ERROR.
       // TODO: does not handle delayed errors per getSynValidOrSemInvalidAltThatFinishedDecisionEntryRule()

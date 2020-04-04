@@ -36,7 +36,7 @@ void ParserRuleContext::copyFrom(ParserRuleContext *ctx) {
   this->start = ctx->start;
   this->stop = ctx->stop;
 
-  // copy any error nodes to alt label node
+  // copy any errors nodes to alt label node
   if (!ctx->children.empty()) {
     for (auto child : ctx->children) {
       auto errorNode = dynamic_cast<ErrorNode *>(child);
@@ -46,7 +46,7 @@ void ParserRuleContext::copyFrom(ParserRuleContext *ctx) {
       }
     }
 
-    // Remove the just reparented error nodes from the source context.
+    // Remove the just reparented errors nodes from the source context.
     ctx->children.erase(std::remove_if(ctx->children.begin(), ctx->children.end(), [this](tree::ParseTree *e) -> bool {
       return std::find(children.begin(), children.end(), e) != children.end();
     }), ctx->children.end());

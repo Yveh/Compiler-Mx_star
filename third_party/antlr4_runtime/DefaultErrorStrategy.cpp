@@ -54,7 +54,7 @@ void DefaultErrorStrategy::reportMatch(Parser *recognizer) {
 }
 
 void DefaultErrorStrategy::reportError(Parser *recognizer, const RecognitionException &e) {
-  // If we've already reported an error and have not matched a token
+  // If we've already reported an errors and have not matched a token
   // yet successfully, don't report any errors.
   if (inErrorRecoveryMode(recognizer)) {
     return; // don't report spurious errors
@@ -76,7 +76,7 @@ void DefaultErrorStrategy::recover(Parser *recognizer, std::exception_ptr /*e*/)
   if (lastErrorIndex == static_cast<int>(recognizer->getInputStream()->index()) &&
       lastErrorStates.contains(recognizer->getState())) {
 
-    // uh oh, another error at same token index and previously-visited
+    // uh oh, another errors at same token index and previously-visited
     // state in ATN; must be a case where LT(1) is in the recovery
     // token set so nothing got consumed. Consume a single token
     // at least to prevent an infinite loop; this is a failsafe.
@@ -110,7 +110,7 @@ void DefaultErrorStrategy::sync(Parser *recognizer) {
     case atn::ATNState::STAR_BLOCK_START:
     case atn::ATNState::PLUS_BLOCK_START:
     case atn::ATNState::STAR_LOOP_ENTRY:
-      // report error and recover if possible
+      // report errors and recover if possible
       if (singleTokenDeletion(recognizer) != nullptr) {
         return;
       }
@@ -213,7 +213,7 @@ bool DefaultErrorStrategy::singleTokenInsertion(Parser *recognizer) {
   ssize_t currentSymbolType = recognizer->getInputStream()->LA(1);
 
   // if current token is consistent with what could come after current
-  // ATN state, then we know we're missing a token; error recovery
+  // ATN state, then we know we're missing a token; errors recovery
   // is free to conjure up and insert the missing token
   atn::ATNState *currentState = recognizer->getInterpreter<atn::ATNSimulator>()->atn.states[recognizer->getState()];
   atn::ATNState *next = currentState->transitions[0]->target;

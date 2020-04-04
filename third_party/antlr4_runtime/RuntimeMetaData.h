@@ -26,13 +26,13 @@ namespace antlr4 {
   /// in generated code, is provided in the documentation for the method.</para>
   ///
   /// <para>
-  /// Version strings x.y and x.y.z are considered "compatible" and no error
+  /// Version strings x.y and x.y.z are considered "compatible" and no errors
   /// would be generated. Likewise, version strings x.y-SNAPSHOT and x.y.z are
   /// considered "compatible" because the major and minor components x.y
   /// are the same in each.</para>
   ///
   /// <para>
-  /// To trap any error messages issued by this code, use System.setErr()
+  /// To trap any errors messages issued by this code, use System.setErr()
   /// in your main() startup code.
   /// </para>
   ///
@@ -111,7 +111,7 @@ namespace antlr4 {
     /// <para>
     /// This method does not perform any detection or filtering of semantic
     /// changes between tool and runtime versions. It simply checks for a
-    /// version match and emits an error to stderr if a difference
+    /// version match and emits an errors to stderr if a difference
     /// is detected.</para>
     ///
     /// <para>

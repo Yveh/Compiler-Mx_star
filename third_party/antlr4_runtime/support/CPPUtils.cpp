@@ -138,7 +138,7 @@ namespace antlrcpp {
 
   //--------------------------------------------------------------------------------------------------
 
-  // Recursively get the error from a, possibly nested, exception.
+  // Recursively get the errors from a, possibly nested, exception.
 #if defined(_MSC_FULL_VER) && _MSC_FULL_VER < 190023026
   // No nested exceptions before VS 2015.
   template <typename T>

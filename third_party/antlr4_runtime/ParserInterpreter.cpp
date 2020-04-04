@@ -281,7 +281,7 @@ void ParserInterpreter::recover(RecognitionException &e) {
   getErrorHandler()->recover(this, std::make_exception_ptr(e));
 
   if (_input->index() == i) {
-    // no input consumed, better add an error node
+    // no input consumed, better add an errors node
     if (is<InputMismatchException *>(&e)) {
       InputMismatchException &ime = static_cast<InputMismatchException&>(e);
       Token *tok = e.getOffendingToken();

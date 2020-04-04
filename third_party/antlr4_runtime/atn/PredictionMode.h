@@ -27,9 +27,9 @@ namespace atn {
      * <p>
      * When using this prediction mode, the parser will either return a correct
      * parse tree (i.e. the same parse tree that would be returned with the
-     * {@link #LL} prediction mode), or it will report a syntax error. If a
-     * syntax error is encountered when using the {@link #SLL} prediction mode,
-     * it may be due to either an actual syntax error in the input or indicate
+     * {@link #LL} prediction mode), or it will report a syntax errors. If a
+     * syntax errors is encountered when using the {@link #SLL} prediction mode,
+     * it may be due to either an actual syntax errors in the input or indicate
      * that the particular combination of grammar and input requires the more
      * powerful {@link #LL} prediction abilities to complete successfully.</p>
      *

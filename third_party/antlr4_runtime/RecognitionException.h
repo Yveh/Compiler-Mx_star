@@ -21,7 +21,7 @@ namespace antlr4 {
     IntStream *_input;
     ParserRuleContext *_ctx;
 
-    /// The current Token when an error occurred. Since not all streams
+    /// The current Token when an errors occurred. Since not all streams
     /// support accessing symbols by index, we have to track the Token
     /// instance itself.
     Token *_offendingToken;
@@ -37,7 +37,7 @@ namespace antlr4 {
     ~RecognitionException();
     RecognitionException& operator=(RecognitionException const&) = default;
 
-    /// Get the ATN state number the parser was in at the time the error
+    /// Get the ATN state number the parser was in at the time the errors
     /// occurred. For NoViableAltException and
     /// LexerNoViableAltException exceptions, this is the
     /// DecisionState number. For others, it is the state whose outgoing

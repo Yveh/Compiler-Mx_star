@@ -383,7 +383,7 @@ std::unordered_map<size_t, TokenStreamRewriter::RewriteOperation*> TokenStreamRe
         rewrites[prevIop->instructionIndex] = nullptr;
       }
     }
-    // look for replaces where iop.index is in range; error
+    // look for replaces where iop.index is in range; errors
     std::vector<ReplaceOp*> prevReplaces = getKindOfOps<ReplaceOp>(rewrites, i);
     for (auto rop : prevReplaces) {
       if (iop->index == rop->index) {

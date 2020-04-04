@@ -30,7 +30,7 @@ namespace antlr4 {
   public:
 
     /// <summary>
-    /// Reset the error handler state for the specified {@code recognizer}. </summary>
+    /// Reset the errors handler state for the specified {@code recognizer}. </summary>
     /// <param name="recognizer"> the parser instance </param>
     virtual ~ANTLRErrorStrategy();
 
@@ -38,7 +38,7 @@ namespace antlr4 {
 
     /**
      * This method is called when an unexpected symbol is encountered during an
-     * inline match operation, such as {@link Parser#match}. If the error
+     * inline match operation, such as {@link Parser#match}. If the errors
      * strategy successfully recovers from the match failure, this method
      * returns the {@link Token} instance which should be treated as the
      * successful result of the match.
@@ -46,12 +46,12 @@ namespace antlr4 {
      * <p>This method handles the consumption of any tokens - the caller should
      * <b>not</b> call {@link Parser#consume} after a successful recovery.</p>
      *
-     * <p>Note that the calling code will not report an error if this method
-     * returns successfully. The error strategy implementation is responsible
+     * <p>Note that the calling code will not report an errors if this method
+     * returns successfully. The errors strategy implementation is responsible
      * for calling {@link Parser#notifyErrorListeners} as appropriate.</p>
      *
      * @param recognizer the parser instance
-     * @throws RecognitionException if the error strategy was not able to
+     * @throws RecognitionException if the errors strategy was not able to
      * recover from the unexpected input symbol
      */
     virtual Token* recoverInline(Parser *recognizer) = 0;
@@ -65,12 +65,12 @@ namespace antlr4 {
     /// </seealso>
     /// <param name="recognizer"> the parser instance </param>
     /// <param name="e"> the recognition exception to recover from </param>
-    /// <exception cref="RecognitionException"> if the error strategy could not recover from
+    /// <exception cref="RecognitionException"> if the errors strategy could not recover from
     /// the recognition exception </exception>
     virtual void recover(Parser *recognizer, std::exception_ptr e) = 0;
 
     /// <summary>
-    /// This method provides the error handler with an opportunity to handle
+    /// This method provides the errors handler with an opportunity to handle
     /// syntactic or semantic errors in the input stream before they result in a
     /// <seealso cref="RecognitionException"/>.
     /// <p/>
@@ -84,14 +84,14 @@ namespace antlr4 {
     /// <seealso cref= DefaultErrorStrategy#sync
     /// </seealso>
     /// <param name="recognizer"> the parser instance </param>
-    /// <exception cref="RecognitionException"> if an error is detected by the error
+    /// <exception cref="RecognitionException"> if an errors is detected by the errors
     /// strategy but cannot be automatically recovered at the current state in
     /// the parsing process </exception>
     virtual void sync(Parser *recognizer) = 0;
 
     /// <summary>
     /// Tests whether or not {@code recognizer} is in the process of recovering
-    /// from an error. In error recovery mode, <seealso cref="Parser#consume"/> adds
+    /// from an errors. In errors recovery mode, <seealso cref="Parser#consume"/> adds
     /// symbols to the parse tree by calling
     /// {@link Parser#createErrorNode(ParserRuleContext, Token)} then
     /// {@link ParserRuleContext#addErrorNode(ErrorNode)} instead of
@@ -99,7 +99,7 @@ namespace antlr4 {
     /// </summary>
     /// <param name="recognizer"> the parser instance </param>
     /// <returns> {@code true} if the parser is currently recovering from a parse
-    /// error, otherwise {@code false} </returns>
+    /// errors, otherwise {@code false} </returns>
     virtual bool inErrorRecoveryMode(Parser *recognizer) = 0;
 
     /// <summary>

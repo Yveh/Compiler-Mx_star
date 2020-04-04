@@ -15,6 +15,7 @@ public:
     type_t(type_et _kind, std::string _name, int _dim);
 
     bool operator == (const type_t &rhs) const;
+    bool operator != (const type_t &rhs) const;
 };
 
 static type_t typeVoid = type_t(type_t::ty_void, "", 0);

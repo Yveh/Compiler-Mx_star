@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 
-#include "types.h"
+#include "Types.h"
 #include "ASTVisitor.h"
 
 class ASTNode {
@@ -103,6 +103,8 @@ class ASTExprNew : public ASTExpr {
 public:
     virtual void accept(ASTVisitor *visitor);
     std::vector<std::shared_ptr<ASTNode>> paras;
+    bool isArray;
+    std::string name;
 };
 
 class ASTExprBinary : public ASTExpr {

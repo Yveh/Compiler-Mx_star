@@ -1,4 +1,4 @@
-#include "types.h"
+#include "Types.h"
 
 bool type_t::operator==(const type_t &rhs) const {
     if (kind != rhs.kind)
@@ -11,6 +11,10 @@ type_t::type_t(type_t::type_et _kind, std::string _name, int _dim) {
     kind = _kind;
     name = _name;
     dim = _dim;
+}
+
+bool type_t::operator!=(const type_t &rhs) const {
+    return !(*this == rhs);
 }
 
 

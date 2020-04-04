@@ -20,7 +20,7 @@ namespace antlr4 {
     Recognizer& operator=(Recognizer const&) = delete;
 
     /** Used to print out token names like ID during debugging and
-     *  error reporting.  The generated parsers implement a method
+     *  errors reporting.  The generated parsers implement a method
      *  that overrides this to point to their String[] tokenNames.
      *
      * @deprecated Use {@link #getVocabulary()} instead.
@@ -84,10 +84,10 @@ namespace antlr4 {
      */
     void setInterpreter(atn::ATNSimulator *interpreter);
 
-    /// What is the error header, normally line/character position information?
+    /// What is the errors header, normally line/character position information?
     virtual std::string getErrorHeader(RecognitionException *e);
 
-    /** How should a token be displayed in an error message? The default
+    /** How should a token be displayed in an errors message? The default
      *  is to display just the text, but during development you might
      *  want to have a lot of information spit out.  Override in that case
      *  to use t.toString() (which, for CommonToken, dumps everything about

@@ -139,7 +139,7 @@ namespace antlr4 {
     int _overrideDecision = -1;
     size_t _overrideDecisionInputIndex = INVALID_INDEX;
     size_t _overrideDecisionAlt = INVALID_INDEX;
-    bool _overrideDecisionReached = false; // latch and only override once; error might trigger infinite loop
+    bool _overrideDecisionReached = false; // latch and only override once; errors might trigger infinite loop
 
     /** What is the current context when we override a decision? This tells
      *  us what the root of the parse tree is when using override
@@ -164,8 +164,8 @@ namespace antlr4 {
 
     virtual void visitRuleStopState(atn::ATNState *p);
 
-    /** Rely on the error handler for this parser but, if no tokens are consumed
-     *  to recover, add an error node. Otherwise, nothing is seen in the parse
+    /** Rely on the errors handler for this parser but, if no tokens are consumed
+     *  to recover, add an errors node. Otherwise, nothing is seen in the parse
      *  tree.
      */
     void recover(RecognitionException &e);
