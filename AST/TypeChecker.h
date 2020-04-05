@@ -5,14 +5,14 @@
 #include "ASTVisitor.h"
 #include "ASTNode.h"
 #include "Env.h"
-#include "SematicIssue.h"
+#include "SemanticIssue.h"
 #include "Builtin.h"
 
 class TypeChecker : public ASTVisitor {
 public:
     std::shared_ptr<Env> env;
-    SematicIssue* issue;
-    void createEnv(ASTRoot* node, SematicIssue* _issue);
+    SemanticIssue* issue;
+    void createEnv(ASTRoot* node, SemanticIssue* _issue);
     void typeCheck(ASTRoot* node);
 
     virtual void visit(ASTNode* node) override;

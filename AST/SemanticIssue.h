@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 
-class SematicIssue {
+class SemanticIssue {
 private:
     std::vector<std::pair<int, std::string>> errors;
 public:

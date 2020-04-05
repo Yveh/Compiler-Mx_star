@@ -1,6 +1,6 @@
 #include "TypeChecker.h"
 
-void TypeChecker::createEnv(ASTRoot* node, SematicIssue* _issue) {
+void TypeChecker::createEnv(ASTRoot* node, SemanticIssue* _issue) {
     issue = _issue;
     // class
     for (auto cchild : node->classList) {

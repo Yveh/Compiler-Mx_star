@@ -1,14 +1,14 @@
-#include "SematicIssue.h"
+#include "SemanticIssue.h"
 
-void SematicIssue::issue(int pos, std::string msg) {
+void SemanticIssue::issue(int pos, std::string msg) {
     errors.push_back(std::make_pair(pos, msg));
 }
 
-int SematicIssue::count() {
+int SemanticIssue::count() {
     return errors.size();
 }
 
-void SematicIssue::print() {
+void SemanticIssue::print() {
     for (auto error : errors) {
         std::cerr << "[" << error.first << "] : " << error.second << std::endl;
     }

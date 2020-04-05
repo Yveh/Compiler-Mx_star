@@ -5,7 +5,7 @@
 #include "Mx_starParser.h"
 #include "ASTBuilder.h"
 #include "TypeChecker.h"
-#include "SematicIssue.h"
+#include "SemanticIssue.h"
 #include "Builtin.h"
 
 int main(int argc, char *argv[]){
@@ -29,7 +29,7 @@ int main(int argc, char *argv[]){
         return -1;
     ASTBuilder builder;
     auto node = builder.build(tree);
-    std::shared_ptr<SematicIssue> issues = std::make_shared<SematicIssue>();
+    std::shared_ptr<SemanticIssue> issues = std::make_shared<SemanticIssue>();
     TypeChecker checker;
     Builtin::init(checker.env);
     checker.createEnv(node.get(), issues.get());
