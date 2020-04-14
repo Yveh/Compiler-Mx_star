@@ -10,7 +10,7 @@
 
 int main(int argc, char *argv[]){
     /* If Debug */
-//    const std::string filepath("../local-judge/testcase/sema/misc-package/misc-19.mx");
+//    const std::string filepath("../local-judge/testcase/sema/basic-package/basic-1.mx");
 //    std::ifstream ifs;
 //    ifs.open(filepath);
 //    if (!ifs.good()) {
@@ -32,12 +32,12 @@ int main(int argc, char *argv[]){
     std::shared_ptr<SemanticIssue> issues = std::make_shared<SemanticIssue>();
     TypeChecker checker(issues);
     Builtin::init(checker.env);
-    checker.createEnv(node.get());
+    checker.createEnv(node);
     if (issues->count() > 0) {
         issues->print();
         return -1;
     }
-    checker.typeCheck(node.get());
+    checker.typeCheck(node);
     if (issues->count() > 0) {
         issues->print();
         return -1;

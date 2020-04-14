@@ -1,98 +1,98 @@
 #include "ASTVisitor.h"
 #include "ASTNode.h"
 
-void ASTVisitor::visit(ASTNode* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTNode> node) {
     node->accept(this);
 }
 
-void ASTVisitor::visit(ASTRoot* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTRoot> node) {
     node->accept(this);
 }
 
-void ASTVisitor::visit(ASTStmt* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTStmt> node) {
     node->ASTStmt::accept(this);
 }
 
-void ASTVisitor::visit(ASTStmtBreak* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTStmtBreak> node) {
     node->accept(this);
 }
 
-void ASTVisitor::visit(ASTStmtContinue* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTStmtContinue> node) {
     node->accept(this);
 }
 
-void ASTVisitor::visit(ASTStmtReturn* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTStmtReturn> node) {
     node->accept(this);
 }
 
-void ASTVisitor::visit(ASTStmtFor* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTStmtFor> node) {
     node->accept(this);
 }
 
-void ASTVisitor::visit(ASTStmtWhile* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTStmtWhile> node) {
     node->accept(this);
 }
 
-void ASTVisitor::visit(ASTStmtIf* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTStmtIf> node) {
     node->accept(this);
 }
 
-void ASTVisitor::visit(ASTStmtExpr* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTStmtExpr> node) {
     node->accept(this);
 }
 
-void ASTVisitor::visit(ASTClassDecl* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTClassDecl> node) {
     node->accept(this);
 }
 
-void ASTVisitor::visit(ASTBlock* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTBlock> node) {
     node->accept(this);
 }
 
-void ASTVisitor::visit(ASTFuncDecl* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTFuncDecl> node) {
     node->accept(this);
 }
 
-void ASTVisitor::visit(ASTVarDecl* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTVarDecl> node) {
     node->accept(this);
 }
 
-void ASTVisitor::visit(ASTExpr* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTExpr> node) {
     node->ASTExpr::accept(this);
 }
 
-void ASTVisitor::visit(ASTExprNew* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTExprNew> node) {
     node->accept(this);
 }
 
-void ASTVisitor::visit(ASTExprAssign* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTExprAssign> node) {
     node->accept(this);
 }
 
-void ASTVisitor::visit(ASTExprBinary* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTExprBinary> node) {
     node->accept(this);
 }
 
-void ASTVisitor::visit(ASTExprUnary* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTExprUnary> node) {
     node->accept(this);
 }
 
-void ASTVisitor::visit(ASTExprSubscript* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTExprSubscript> node) {
     node->accept(this);
 }
 
-void ASTVisitor::visit(ASTExprFuncCall* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTExprFuncCall> node) {
     node->accept(this);
 }
 
-void ASTVisitor::visit(ASTExprMemberAccess* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTExprMemberAccess> node) {
     node->accept(this);
 }
 
-void ASTVisitor::visit(ASTExprVar* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTExprVar> node) {
     node->accept(this);
 }
 
-void ASTVisitor::visit(ASTExprLiteral* node) {
+void ASTVisitor::visit(std::shared_ptr<ASTExprLiteral> node) {
     node->accept(this);
 }

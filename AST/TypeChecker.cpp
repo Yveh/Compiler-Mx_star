@@ -1,9 +1,9 @@
 #include "TypeChecker.h"
 
-void TypeChecker::createEnv(ASTRoot* node) {
+void TypeChecker::createEnv(std::shared_ptr<ASTRoot> node) {
     // class
     for (auto cchild : node->classList) {
-        auto obj = dynamic_cast<ASTClassDecl*>(cchild.get());
+        auto obj = std::dynamic_pointer_cast<ASTClassDecl>(cchild);
         if (!Builtin::checkVarName(obj->name))
             issue->issue(obj->pos, "expected unqualified-id");
         else {
@@ -13,13 +13,13 @@ void TypeChecker::createEnv(ASTRoot* node) {
         }
     }
     for (auto cchild : node->classList) {
-        auto obj = dynamic_cast<ASTClassDecl*>(cchild.get());
+        auto obj = std::dynamic_pointer_cast<ASTClassDecl>(cchild);
         if (!Builtin::checkVarName(obj->name))
             continue;
         // check memberFunction
         classInfo &cinfo = env->classTable.find(obj->name);
         for (auto fchild : obj->funcList) {
-            auto func = dynamic_cast<ASTFuncDecl*>(fchild.get());
+            auto func = std::dynamic_pointer_cast<ASTFuncDecl>(fchild);
             if (!Builtin::checkVarName(func->name))
                 issue->issue(func->pos, "expected unqualified-id");
             else if (func->name != obj->name && env->classTable.count(func->name))
@@ -35,7 +35,7 @@ void TypeChecker::createEnv(ASTRoot* node) {
                 finfo.retType = func->retType;
                 // check parameters
                 for (auto vchild : func->paras) {
-                    auto para = dynamic_cast<ASTVarDecl *>(vchild.get());
+                    auto para = std::dynamic_pointer_cast<ASTVarDecl>(vchild);
                     finfo.parasType.push_back(para->varType);
                 }
                 if (!cinfo.memberFunc.insert(func->name, finfo))
@@ -44,7 +44,7 @@ void TypeChecker::createEnv(ASTRoot* node) {
         }
         // check memberVar
         for (auto vchild : obj->varList) {
-            auto var = dynamic_cast<ASTVarDecl*>(vchild.get());
+            auto var = std::dynamic_pointer_cast<ASTVarDecl>(vchild);
             for (int idx = 0; idx < var->name.size(); idx++) {
                 if (!Builtin::checkVarName(var->name[idx]))
                     issue->issue(var->pos, "expected unqualified-id");
@@ -61,7 +61,7 @@ void TypeChecker::createEnv(ASTRoot* node) {
     }
     // check function
     for (auto fchild : node->funcList) {
-        auto func = dynamic_cast<ASTFuncDecl*>(fchild.get());
+        auto func = std::dynamic_pointer_cast<ASTFuncDecl>(fchild);
         if (!Builtin::checkVarName(func->name))
             issue->issue(func->pos, "expected unqualified-id");
         else if (env->classTable.count(func->name))
@@ -73,7 +73,7 @@ void TypeChecker::createEnv(ASTRoot* node) {
             finfo.retType = func->retType;
             // check parameters
             for (auto vchild : func->paras) {
-                auto para = dynamic_cast<ASTVarDecl *>(vchild.get());
+                auto para = std::dynamic_pointer_cast<ASTVarDecl>(vchild);
                 finfo.parasType.push_back(para->varType);
             }
             if (!env->funcTable.insert(func->name, finfo))
@@ -91,15 +91,15 @@ void TypeChecker::createEnv(ASTRoot* node) {
     }
 }
 
-void TypeChecker::typeCheck(ASTRoot* node) {
+void TypeChecker::typeCheck(std::shared_ptr<ASTRoot> node) {
     visit(node);
 }
 
-void TypeChecker::visit(ASTNode* node) {
+void TypeChecker::visit(std::shared_ptr<ASTNode> node) {
     ASTVisitor::visit(node);
 }
 
-void TypeChecker::visit(ASTRoot* node)
+void TypeChecker::visit(std::shared_ptr<ASTRoot> node)
 {
     env->funcTable.beginScope();
     env->varTable.beginScope();
@@ -108,21 +108,21 @@ void TypeChecker::visit(ASTRoot* node)
     env->varTable.endScope();
 }
 
-void TypeChecker::visit(ASTStmt* node) {
+void TypeChecker::visit(std::shared_ptr<ASTStmt> node) {
     ASTVisitor::visit(node);
 }
 
-void TypeChecker::visit(ASTStmtBreak* node) {
+void TypeChecker::visit(std::shared_ptr<ASTStmtBreak> node) {
     if (env->inLoop == 0)
         issue->issue(node->pos, "'break' statement not in loop");
 }
 
-void TypeChecker::visit(ASTStmtContinue* node) {
+void TypeChecker::visit(std::shared_ptr<ASTStmtContinue> node) {
     if (env->inLoop == 0)
         issue->issue(node->pos, "'continue' statement not in loop");
 }
 
-void TypeChecker::visit(ASTStmtReturn* node) {
+void TypeChecker::visit(std::shared_ptr<ASTStmtReturn> node) {
     type_t expectedType;
     env->hasReturn = true;
     if (env->inClass > 0)
@@ -131,7 +131,7 @@ void TypeChecker::visit(ASTStmtReturn* node) {
         expectedType = env->funcTable.find(env->funcName).retType;
 
     if (node->retValue) {
-        auto retValue = dynamic_cast<ASTExpr*>(node->retValue.get());
+        auto retValue = std::dynamic_pointer_cast<ASTExpr>(node->retValue);
         visit(retValue);
         node->retType = retValue->exprType;
     }
@@ -144,12 +144,12 @@ void TypeChecker::visit(ASTStmtReturn* node) {
         issue->issue(node->pos, "invalid function return type");
 }
 
-void TypeChecker::visit(ASTStmtFor* node) {
+void TypeChecker::visit(std::shared_ptr<ASTStmtFor> node) {
     env->varTable.beginScope();
     env->inLoop += 1;
     ASTVisitor::visit(node);
     if (node->cond) {
-        auto child = dynamic_cast<ASTExpr*>(node->cond.get());
+        auto child = std::dynamic_pointer_cast<ASTExpr>(node->cond);
         if (child->exprType != typeBool)
             issue->issue(child->pos, "requires bool type for condition of for-loop");
     }
@@ -157,39 +157,39 @@ void TypeChecker::visit(ASTStmtFor* node) {
     env->inLoop -= 1;
 }
 
-void TypeChecker::visit(ASTStmtWhile* node) {
+void TypeChecker::visit(std::shared_ptr<ASTStmtWhile> node) {
     env->varTable.beginScope();
     env->inLoop += 1;
     ASTVisitor::visit(node);
-    auto child = dynamic_cast<ASTExpr*>(node->cond.get());
+    auto child = std::dynamic_pointer_cast<ASTExpr>(node->cond);
     if (child->exprType != typeBool)
         issue->issue(child->pos, "requires bool type for condition of while-loop");
     env->varTable.endScope();
     env->inLoop -= 1;
 }
 
-void TypeChecker::visit(ASTStmtIf* node) {
-    visit(dynamic_cast<ASTExpr*>(node->cond.get()));
+void TypeChecker::visit(std::shared_ptr<ASTStmtIf> node) {
+    visit(std::dynamic_pointer_cast<ASTExpr>(node->cond));
     if (node->thenStmt) {
         env->varTable.beginScope();
-        visit(dynamic_cast<ASTStmt*>(node->thenStmt.get()));
+        visit(std::dynamic_pointer_cast<ASTStmt>(node->thenStmt));
         env->varTable.endScope();
     }
     if (node->elseStmt) {
         env->varTable.beginScope();
-        visit(dynamic_cast<ASTStmt*>(node->elseStmt.get()));
+        visit(std::dynamic_pointer_cast<ASTStmt>(node->elseStmt));
         env->varTable.endScope();
     }
-    auto child = dynamic_cast<ASTExpr*>(node->cond.get());
+    auto child = std::dynamic_pointer_cast<ASTExpr>(node->cond);
     if (child->exprType != typeBool)
         issue->issue(child->pos, "requires bool type for condition of if-statement");
 }
 
-void TypeChecker::visit(ASTStmtExpr* node) {
+void TypeChecker::visit(std::shared_ptr<ASTStmtExpr> node) {
     ASTVisitor::visit(node);
 }
 
-void TypeChecker::visit(ASTClassDecl* node) {
+void TypeChecker::visit(std::shared_ptr<ASTClassDecl> node) {
     env->funcTable.beginScope();
     env->varTable.beginScope();
     env->inClass += 1;
@@ -199,19 +199,19 @@ void TypeChecker::visit(ASTClassDecl* node) {
     for (auto child : env->classTable.find(node->name).memberVar)
         env->varTable.insert(child);
     for (auto child : node->funcList)
-        visit(dynamic_cast<ASTFuncDecl*>(child.get()));
+        visit(std::dynamic_pointer_cast<ASTFuncDecl>(child));
     env->funcTable.endScope();
     env->varTable.endScope();
     env->inClass -= 1;
 }
 
-void TypeChecker::visit(ASTBlock* node) {
+void TypeChecker::visit(std::shared_ptr<ASTBlock> node) {
     env->varTable.beginScope();
     ASTVisitor::visit(node);
     env->varTable.endScope();
 }
 
-void TypeChecker::visit(ASTFuncDecl* node) {
+void TypeChecker::visit(std::shared_ptr<ASTFuncDecl> node) {
     env->varTable.beginScope();
     env->inFunc = true;
     env->hasReturn = false;
@@ -223,7 +223,7 @@ void TypeChecker::visit(ASTFuncDecl* node) {
     env->inFunc = false;
 }
 
-void TypeChecker::visit(ASTVarDecl* node) {
+void TypeChecker::visit(std::shared_ptr<ASTVarDecl> node) {
     ASTVisitor::visit(node);
     for (int idx = 0; idx < node->name.size(); idx++) {
         if (!Builtin::checkVarName(node->name[idx]))
@@ -237,7 +237,7 @@ void TypeChecker::visit(ASTVarDecl* node) {
         else if (!env->varTable.insert(node->name[idx], vinfo))
             issue->issue(node->pos, "redefinition of '" + node->name[idx] + "'");
         if (node->initValue[idx]) {
-            auto initValue = dynamic_cast<ASTExpr *>(node->initValue[idx].get());
+            auto initValue = std::dynamic_pointer_cast<ASTExpr>(node->initValue[idx]);
             if (initValue->exprType != node->varType && !(node->varType.dim > 0 && initValue->exprType == typeNull) &&
                 !(node->varType.kind == type_t::ty_class && initValue->exprType == typeNull))
                 issue->issue(node->pos, "type of init value doesnot match");
@@ -245,18 +245,18 @@ void TypeChecker::visit(ASTVarDecl* node) {
     }
 }
 
-void TypeChecker::visit(ASTExpr* node) {
+void TypeChecker::visit(std::shared_ptr<ASTExpr> node) {
     ASTVisitor::visit(node);
 }
 
-void TypeChecker::visit(ASTExprNew* node) {
+void TypeChecker::visit(std::shared_ptr<ASTExprNew> node) {
     ASTVisitor::visit(node);
     if (node->exprType.kind == type_t::ty_void)
         issue->issue(node->pos, "type of variable cannot be void");
     else if (node->exprType.kind == type_t::ty_class && !env->classTable.count(node->exprType.name))
         issue->issue(node->pos, "definition of class '" + node->exprType.name + "' doesnot exist");
     for (auto child : node->paras) {
-        auto para = dynamic_cast<ASTExpr *>(child.get());
+        auto para = std::dynamic_pointer_cast<ASTExpr>(child);
         if (para) {
             if (para->exprType != typeInt)
                 issue->issue(node->pos, "requires index of int type for new-statement");
@@ -264,10 +264,10 @@ void TypeChecker::visit(ASTExprNew* node) {
     }
 }
 
-void TypeChecker::visit(ASTExprAssign* node) {
+void TypeChecker::visit(std::shared_ptr<ASTExprAssign> node) {
     ASTVisitor::visit(node);
-    auto operandL = dynamic_cast<ASTExpr*>(node->operandL.get());
-    auto operandR = dynamic_cast<ASTExpr*>(node->operandR.get());
+    auto operandL = std::dynamic_pointer_cast<ASTExpr>(node->operandL);
+    auto operandR = std::dynamic_pointer_cast<ASTExpr>(node->operandR);
     if (operandL->exprType != operandR->exprType && !(operandL->exprType.dim > 0 && operandR->exprType == typeNull) &&
         !(operandL->exprType.kind == type_t::ty_class && operandR->exprType == typeNull))
         issue->issue(node->pos, "Assignment type doesnot match");
@@ -277,10 +277,10 @@ void TypeChecker::visit(ASTExprAssign* node) {
     node->valueType = rvalue;
 }
 
-void TypeChecker::visit(ASTExprBinary* node) {
+void TypeChecker::visit(std::shared_ptr<ASTExprBinary> node) {
     ASTVisitor::visit(node);
-    auto operandL = dynamic_cast<ASTExpr*>(node->operandL.get());
-    auto operandR = dynamic_cast<ASTExpr*>(node->operandR.get());
+    auto operandL = std::dynamic_pointer_cast<ASTExpr>(node->operandL);
+    auto operandR = std::dynamic_pointer_cast<ASTExpr>(node->operandR);
     if (node->op == ASTExprBinary::logic_or || node->op == ASTExprBinary::logic_and) {
         if (operandL->exprType != typeBool || operandR->exprType != typeBool)
             issue->issue(node->pos, "type error in binary arithmetic");
@@ -336,9 +336,9 @@ void TypeChecker::visit(ASTExprBinary* node) {
     }
 }
 
-void TypeChecker::visit(ASTExprUnary* node) {
+void TypeChecker::visit(std::shared_ptr<ASTExprUnary> node) {
     ASTVisitor::visit(node);
-    auto operand = dynamic_cast<ASTExpr*>(node->operand.get());
+    auto operand = std::dynamic_pointer_cast<ASTExpr>(node->operand);
     if (node->op == ASTExprUnary::inc_postfix || node->op == ASTExprUnary::dec_postfix ||
         node->op == ASTExprUnary::inc_prefix || node->op == ASTExprUnary::dec_prefix) {
         if (operand->exprType != typeInt)
@@ -372,10 +372,10 @@ void TypeChecker::visit(ASTExprUnary* node) {
     }
 }
 
-void TypeChecker::visit(ASTExprSubscript* node) {
+void TypeChecker::visit(std::shared_ptr<ASTExprSubscript> node) {
     ASTVisitor::visit(node);
-    auto array = dynamic_cast<ASTExpr*>(node->array.get());
-    auto subscript = dynamic_cast<ASTExpr*>(node->subscript.get());
+    auto array = std::dynamic_pointer_cast<ASTExpr>(node->array);
+    auto subscript = std::dynamic_pointer_cast<ASTExpr>(node->subscript);
     if (array->exprType.dim == 0)
         issue->issue(node->pos, "requires array for subscript");
     if (subscript->exprType != typeInt)
@@ -385,7 +385,7 @@ void TypeChecker::visit(ASTExprSubscript* node) {
     node->valueType = lvalue;
 }
 
-void TypeChecker::visit(ASTExprFuncCall* node) {
+void TypeChecker::visit(std::shared_ptr<ASTExprFuncCall> node) {
     ASTVisitor::visit(node);
     if (!Builtin::checkVarName(node->name))
         issue->issue(node->pos, "expected unqualified-id");
@@ -399,7 +399,7 @@ void TypeChecker::visit(ASTExprFuncCall* node) {
             } else {
                 bool flag = true;
                 for (int idx = 0; idx < node->paras.size(); idx++) {
-                    auto para = dynamic_cast<ASTExpr *>(node->paras[idx].get());
+                    auto para = std::dynamic_pointer_cast<ASTExpr>(node->paras[idx]);
                     if (para->exprType != expectedFunc.parasType[idx] && !(para->exprType == typeNull && expectedFunc.parasType[idx].dim > 0) &&
                         !(para->exprType == typeNull && expectedFunc.parasType[idx].kind == type_t::ty_class)) {
                         flag = false;
@@ -417,14 +417,14 @@ void TypeChecker::visit(ASTExprFuncCall* node) {
     }
 }
 
-void TypeChecker::visit(ASTExprMemberAccess* node) {
-    auto obj = dynamic_cast<ASTExpr*>(node->object.get());
+void TypeChecker::visit(std::shared_ptr<ASTExprMemberAccess> node) {
+    auto obj = std::dynamic_pointer_cast<ASTExpr>(node->object);
     visit(obj);
     if (!obj->exprType.isClass() && obj->exprType.dim == 0)
         issue->issue(node->pos, "requires a object for member access");
     else {
         if (node->memberFunc) {
-            auto func = dynamic_cast<ASTExprFuncCall *>(node->memberFunc.get());
+            auto func = std::dynamic_pointer_cast<ASTExprFuncCall>(node->memberFunc);
             if (!Builtin::checkVarName(func->name))
                 issue->issue(node->pos, "expected unqualified-id");
             else if (!env->classTable.find(obj->exprType.dim > 0 ? "" : obj->exprType.name).memberFunc.count(func->name))
@@ -438,7 +438,7 @@ void TypeChecker::visit(ASTExprMemberAccess* node) {
                 else {
                     bool flag = true;
                     for (int idx = 0; idx < func->paras.size(); idx++) {
-                        auto para = dynamic_cast<ASTExpr *>(func->paras[idx].get());
+                        auto para = std::dynamic_pointer_cast<ASTExpr>(func->paras[idx]);
                         visit(para);
                         if (para->exprType != expectedFunc.parasType[idx] && !(para->exprType == typeNull && expectedFunc.parasType[idx].dim > 0) &&
                             !(para->exprType == typeNull && expectedFunc.parasType[idx].kind == type_t::ty_class)) {
@@ -470,7 +470,7 @@ void TypeChecker::visit(ASTExprMemberAccess* node) {
     }
 }
 
-void TypeChecker::visit(ASTExprVar* node) {
+void TypeChecker::visit(std::shared_ptr<ASTExprVar> node) {
     if (node->isThis) {
         if (env->inClass == 0)
             issue->issue(node->pos, "'this' not in class");
@@ -488,7 +488,7 @@ void TypeChecker::visit(ASTExprVar* node) {
     }
 }
 
-void TypeChecker::visit(ASTExprLiteral* node) {}
+void TypeChecker::visit(std::shared_ptr<ASTExprLiteral> node) {}
 
 
 

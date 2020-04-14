@@ -19,7 +19,7 @@ public:
     std::vector<std::shared_ptr<ASTNode>> classList, funcList, varList, children;
 };
 
-class ASTStmt : public ASTNode {
+class ASTStmt : public ASTNode , public std::enable_shared_from_this<ASTStmt> {
 public:
     virtual void accept(ASTVisitor *visitor) override;
 };
@@ -94,7 +94,7 @@ public:
     std::vector<std::shared_ptr<ASTNode>> initValue;
 };
 
-class ASTExpr : public ASTNode {
+class ASTExpr : public ASTNode , public std::enable_shared_from_this<ASTExpr> {
 public:
     virtual void accept(ASTVisitor *visitor) override;
     type_t exprType;
