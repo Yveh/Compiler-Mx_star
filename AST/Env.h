@@ -25,7 +25,7 @@ public:
     SymbolTable<funcInfo> funcTable;
     SymbolTable<classInfo> classTable;
     SymbolTable<varInfo> varTable;
-    int inClass = 0, inLoop = 0, inFunc = 0;
-    bool hasReturn = 0;
+    int inClass = 0, inLoop = 0;
+    bool inFunc = false, hasReturn = false;
     std::string className, funcName;
 };

@@ -1,7 +1,6 @@
 #include "TypeChecker.h"
 
-void TypeChecker::createEnv(ASTRoot* node, SemanticIssue* _issue) {
-    issue = _issue;
+void TypeChecker::createEnv(ASTRoot* node) {
     // class
     for (auto cchild : node->classList) {
         auto obj = dynamic_cast<ASTClassDecl*>(cchild.get());
@@ -125,7 +124,7 @@ void TypeChecker::visit(ASTStmtContinue* node) {
 
 void TypeChecker::visit(ASTStmtReturn* node) {
     type_t expectedType;
-    env->hasReturn = 1;
+    env->hasReturn = true;
     if (env->inClass > 0)
         expectedType = env->classTable.find(env->className).memberFunc.find(env->funcName).retType;
     else
@@ -214,13 +213,14 @@ void TypeChecker::visit(ASTBlock* node) {
 
 void TypeChecker::visit(ASTFuncDecl* node) {
     env->varTable.beginScope();
-    env->inFunc += 1;
+    env->inFunc = true;
+    env->hasReturn = false;
     env->funcName = node->name;
     ASTVisitor::visit(node);
     env->varTable.endScope();
     if (!env->hasReturn && node->retType != typeVoid && node->name != "main")
         issue->issue(node->pos, "Non-void function must have a return value");
-    env->inFunc -= 1;
+    env->inFunc = false;
 }
 
 void TypeChecker::visit(ASTVarDecl* node) {

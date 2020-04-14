@@ -30,9 +30,9 @@ int main(int argc, char *argv[]){
     ASTBuilder builder;
     auto node = builder.build(tree);
     std::shared_ptr<SemanticIssue> issues = std::make_shared<SemanticIssue>();
-    TypeChecker checker;
+    TypeChecker checker(issues);
     Builtin::init(checker.env);
-    checker.createEnv(node.get(), issues.get());
+    checker.createEnv(node.get());
     if (issues->count() > 0) {
         issues->print();
         return -1;

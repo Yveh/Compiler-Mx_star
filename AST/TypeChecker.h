@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <utility>
 
 #include "ASTVisitor.h"
 #include "ASTNode.h"
@@ -11,8 +12,8 @@
 class TypeChecker : public ASTVisitor {
 public:
     std::shared_ptr<Env> env;
-    SemanticIssue* issue;
-    void createEnv(ASTRoot* node, SemanticIssue* _issue);
+    std::shared_ptr<SemanticIssue> issue;
+    void createEnv(ASTRoot* node);
     void typeCheck(ASTRoot* node);
 
     virtual void visit(ASTNode* node) override;
@@ -40,7 +41,8 @@ public:
     virtual void visit(ASTExprVar* node) override;
     virtual void visit(ASTExprLiteral* node) override;
 
-    TypeChecker() {
+    TypeChecker(std::shared_ptr<SemanticIssue> _issue) {
         env = std::make_shared<Env>();
+        issue = std::move(_issue);
     }
 };
