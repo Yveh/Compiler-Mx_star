@@ -32,7 +32,7 @@ namespace atn {
     ///      mode-0-start-state, mode-1-start-state, ... (parser has 0 modes)
     ///      num sets
     ///      set-0-interval-count intervals, set-1-interval-count intervals, ...
-    ///  	num total edges,
+    ///  	num total next,
     ///      antlr4_runtime, trg, edge-type, edge arg1, optional edge arg2 (present always),
     ///      ...
     ///      num decisions,

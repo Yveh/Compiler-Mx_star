@@ -34,7 +34,7 @@ namespace dfa {
     /**
      * Gets whether this DFA is a precedence DFA. Precedence DFAs use a special
      * start state {@link #s0} which is not stored in {@link #states}. The
-     * {@link DFAState#edges} array for this start state contains outgoing edges
+     * {@link DFAState#next} array for this start state contains outgoing next
      * supplying individual start states corresponding to specific precedence
      * values.
      *

@@ -172,7 +172,7 @@ namespace atn {
    * The {@link ParserATNSimulator} locks on the {@link #decisionToDFA} field when
    * it adds a new DFA object to that array. {@link #addDFAEdge}
    * locks on the DFA for the current decision when setting the
-   * {@link DFAState#edges} field. {@link #addDFAState} locks on
+   * {@link DFAState#next} field. {@link #addDFAState} locks on
    * the DFA for the current decision when looking up a DFA state to see if it
    * already exists. We must make sure that all requests to add DFA states that
    * are equivalent result in the same shared DFA object. This is because lots of
@@ -184,13 +184,13 @@ namespace atn {
    * safe as long as we can guarantee that all threads referencing
    * {@code s.edge[t]} get the same physical target {@link DFAState}, or
    * {@code null}. Once into the DFA, the DFA simulation does not reference the
-   * {@link DFA#states} map. It follows the {@link DFAState#edges} field to new
-   * targets. The DFA simulator will either find {@link DFAState#edges} to be
-   * {@code null}, to be non-{@code null} and {@code dfa.edges[t]} null, or
-   * {@code dfa.edges[t]} to be non-null. The
+   * {@link DFA#states} map. It follows the {@link DFAState#next} field to new
+   * targets. The DFA simulator will either find {@link DFAState#next} to be
+   * {@code null}, to be non-{@code null} and {@code dfa.next[t]} null, or
+   * {@code dfa.next[t]} to be non-null. The
    * {@link #addDFAEdge} method could be racing to set the field
    * but in either case the DFA simulator works; if {@code null}, and requests ATN
-   * simulation. It could also race trying to get {@code dfa.edges[t]}, but either
+   * simulation. It could also race trying to get {@code dfa.next[t]}, but either
    * way it will work because it's not doing a test and set operation.</p>
    *
    * <p>
@@ -265,7 +265,7 @@ namespace atn {
      * The optimization is to avoid adding the loop entry config when
      * the exit path can only lead back to the same
      * StarLoopEntryState after popping context at the rule end state
-     * (traversing only epsilon edges, so we're still in closure, in
+     * (traversing only epsilon next, so we're still in closure, in
      * this same rule).
      *
      * We need to detect any state that can reach loop entry on
@@ -302,7 +302,7 @@ namespace atn {
      * evaluated when computing a DFA start state. I.e., only before
      * the lookahead (but not parser) consumes a token.
      *
-     * There are no epsilon edges allowed in LR rule alt blocks or in
+     * There are no epsilon next allowed in LR rule alt blocks or in
      * the "primary" part (ID here). If closure is in
      * StarLoopEntryState any lookahead operation will have consumed a
      * token as there are no epsilon-paths that lead to
@@ -310,7 +310,7 @@ namespace atn {
      * therefore if we are in the generated StarLoopEntryState of a LR
      * rule. Note that when making a prediction starting at that
      * decision point, decision d=2, compute-start-state performs
-     * closure starting at edges[0], edges[1] emanating from
+     * closure starting at next[0], next[1] emanating from
      * StarLoopEntryState. That means it is not performing closure on
      * StarLoopEntryState during compute-start-state.
      *
@@ -772,7 +772,7 @@ namespace atn {
     virtual void closureCheckingStopState(Ref<ATNConfig> const& config, ATNConfigSet *configs, ATNConfig::Set &closureBusy,
                                           bool collectPredicates, bool fullCtx, int depth, bool treatEofAsEpsilon);
     
-    /// Do the actual work of walking epsilon edges.
+    /// Do the actual work of walking epsilon next.
     virtual void closure_(Ref<ATNConfig> const& config, ATNConfigSet *configs, ATNConfig::Set &closureBusy,
                           bool collectPredicates, bool fullCtx, int depth, bool treatEofAsEpsilon);
     
@@ -844,7 +844,7 @@ namespace atn {
     /// Add an edge to the DFA, if possible. This method calls
     /// <seealso cref="#addDFAState"/> to ensure the {@code to} state is present in the
     /// DFA. If {@code from} is {@code null}, or if {@code t} is outside the
-    /// range of edges that can be represented in the DFA tables, this method
+    /// range of next that can be represented in the DFA tables, this method
     /// returns without adding the edge to the DFA.
     /// <p/>
     /// If {@code to} is {@code null}, this method returns {@code null}.

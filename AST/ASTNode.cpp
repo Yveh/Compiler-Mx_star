@@ -1,6 +1,6 @@
 #include "ASTNode.h"
 
-void ASTRoot::accept(ASTVisitor *visitor) {
+void ASTRoot::accept(std::shared_ptr<ASTVisitor> visitor) {
     for (auto child : children) {
         if (std::dynamic_pointer_cast<ASTVarDecl>(child))
             visitor->visit(std::dynamic_pointer_cast<ASTVarDecl>(child));
@@ -11,7 +11,7 @@ void ASTRoot::accept(ASTVisitor *visitor) {
     }
 }
 
-void ASTStmt::accept(ASTVisitor *visitor) {
+void ASTStmt::accept(std::shared_ptr<ASTVisitor> visitor) {
     if (std::dynamic_pointer_cast<ASTVarDecl>(shared_from_this()))
         visitor->visit(std::dynamic_pointer_cast<ASTVarDecl>(shared_from_this()));
     else if (std::dynamic_pointer_cast<ASTStmtIf>(shared_from_this()))
@@ -32,16 +32,16 @@ void ASTStmt::accept(ASTVisitor *visitor) {
         visitor->visit(std::dynamic_pointer_cast<ASTBlock>(shared_from_this()));
 }
 
-void ASTStmtBreak::accept(ASTVisitor *visitor) {}
+void ASTStmtBreak::accept(std::shared_ptr<ASTVisitor> visitor) {}
 
-void ASTStmtContinue::accept(ASTVisitor *visitor) {}
+void ASTStmtContinue::accept(std::shared_ptr<ASTVisitor> visitor) {}
 
-void ASTStmtReturn::accept(ASTVisitor *visitor) {
+void ASTStmtReturn::accept(std::shared_ptr<ASTVisitor> visitor) {
     if (retValue)
         visitor->visit(std::dynamic_pointer_cast<ASTExpr>(retValue));
 }
 
-void ASTStmtFor::accept(ASTVisitor *visitor) {
+void ASTStmtFor::accept(std::shared_ptr<ASTVisitor> visitor) {
     if (init)
         visitor->visit(std::dynamic_pointer_cast<ASTExpr>(init));
     if (cond)
@@ -52,13 +52,13 @@ void ASTStmtFor::accept(ASTVisitor *visitor) {
         visitor->visit(std::dynamic_pointer_cast<ASTStmt>(stmt));
 }
 
-void ASTStmtWhile::accept(ASTVisitor *visitor) {
+void ASTStmtWhile::accept(std::shared_ptr<ASTVisitor> visitor) {
     visitor->visit(std::dynamic_pointer_cast<ASTExpr>(cond));
     if (stmt)
         visitor->visit(std::dynamic_pointer_cast<ASTStmt>(stmt));
 }
 
-void ASTStmtIf::accept(ASTVisitor *visitor) {
+void ASTStmtIf::accept(std::shared_ptr<ASTVisitor> visitor) {
     visitor->visit(std::dynamic_pointer_cast<ASTExpr>(cond));
     if (thenStmt)
         visitor->visit(std::dynamic_pointer_cast<ASTStmt>(thenStmt));
@@ -66,11 +66,11 @@ void ASTStmtIf::accept(ASTVisitor *visitor) {
         visitor->visit(std::dynamic_pointer_cast<ASTStmt>(elseStmt));
 }
 
-void ASTStmtExpr::accept(ASTVisitor *visitor) {
+void ASTStmtExpr::accept(std::shared_ptr<ASTVisitor> visitor) {
     visitor->visit(std::dynamic_pointer_cast<ASTExpr>(expr));
 }
 
-void ASTClassDecl::accept(ASTVisitor *visitor) {
+void ASTClassDecl::accept(std::shared_ptr<ASTVisitor> visitor) {
     for (auto child : varList) {
         visitor->visit(std::dynamic_pointer_cast<ASTVarDecl>(child));
     }
@@ -79,25 +79,25 @@ void ASTClassDecl::accept(ASTVisitor *visitor) {
     }
 }
 
-void ASTBlock::accept(ASTVisitor *visitor) {
+void ASTBlock::accept(std::shared_ptr<ASTVisitor> visitor) {
     for (auto child : stmts)
         visitor->visit(std::dynamic_pointer_cast<ASTStmt>(child));
 }
 
-void ASTFuncDecl::accept(ASTVisitor *visitor) {
+void ASTFuncDecl::accept(std::shared_ptr<ASTVisitor> visitor) {
     for (auto child : paras) {
         visitor->visit(std::dynamic_pointer_cast<ASTVarDecl>(child));
     }
     ASTBlock::accept(visitor);
 }
 
-void ASTVarDecl::accept(ASTVisitor *visitor) {
+void ASTVarDecl::accept(std::shared_ptr<ASTVisitor> visitor) {
     for (int idx = 0; idx < name.size(); idx++)
         if (initValue[idx])
             visitor->visit(std::dynamic_pointer_cast<ASTExpr>(initValue[idx]));
 }
 
-void ASTExpr::accept(ASTVisitor *visitor) {
+void ASTExpr::accept(std::shared_ptr<ASTVisitor> visitor) {
     if (std::dynamic_pointer_cast<ASTExprNew>(shared_from_this()))
         visitor->visit(std::dynamic_pointer_cast<ASTExprNew>(shared_from_this()));
     else if (std::dynamic_pointer_cast<ASTExprAssign>(shared_from_this()))
@@ -118,43 +118,43 @@ void ASTExpr::accept(ASTVisitor *visitor) {
         visitor->visit(std::dynamic_pointer_cast<ASTExprLiteral>(shared_from_this()));
 }
 
-void ASTExprNew::accept(ASTVisitor *visitor) {
+void ASTExprNew::accept(std::shared_ptr<ASTVisitor> visitor) {
     for (auto child : paras) {
         if (child)
             visitor->visit(std::dynamic_pointer_cast<ASTExpr>(child));
     }
 }
 
-void ASTExprAssign::accept(ASTVisitor *visitor) {
+void ASTExprAssign::accept(std::shared_ptr<ASTVisitor> visitor) {
     visitor->visit(std::dynamic_pointer_cast<ASTExpr>((operandL)));
     visitor->visit(std::dynamic_pointer_cast<ASTExpr>((operandR)));
 }
 
-void ASTExprBinary::accept(ASTVisitor *visitor) {
+void ASTExprBinary::accept(std::shared_ptr<ASTVisitor> visitor) {
     visitor->visit(std::dynamic_pointer_cast<ASTExpr>((operandL)));
     visitor->visit(std::dynamic_pointer_cast<ASTExpr>((operandR)));
 }
 
-void ASTExprUnary::accept(ASTVisitor *visitor) {
+void ASTExprUnary::accept(std::shared_ptr<ASTVisitor> visitor) {
     visitor->visit(std::dynamic_pointer_cast<ASTExpr>((operand)));
 }
 
-void ASTExprSubscript::accept(ASTVisitor *visitor) {
+void ASTExprSubscript::accept(std::shared_ptr<ASTVisitor> visitor) {
     visitor->visit(std::dynamic_pointer_cast<ASTExpr>((array)));
     visitor->visit(std::dynamic_pointer_cast<ASTExpr>((subscript)));
 }
 
-void ASTExprFuncCall::accept(ASTVisitor *visitor) {
+void ASTExprFuncCall::accept(std::shared_ptr<ASTVisitor> visitor) {
     for (auto child : paras)
         visitor->visit(std::dynamic_pointer_cast<ASTExpr>((child)));
 }
 
-void ASTExprMemberAccess::accept(ASTVisitor *visitor) {
+void ASTExprMemberAccess::accept(std::shared_ptr<ASTVisitor> visitor) {
     visitor->visit(std::dynamic_pointer_cast<ASTExpr>((object)));
     if (memberFunc)
         visitor->visit(std::dynamic_pointer_cast<ASTExpr>((memberFunc)));
 }
 
-void ASTExprVar::accept(ASTVisitor *visitor) {}
+void ASTExprVar::accept(std::shared_ptr<ASTVisitor> visitor) {}
 
-void ASTExprLiteral::accept(ASTVisitor *visitor) {}
+void ASTExprLiteral::accept(std::shared_ptr<ASTVisitor> visitor) {}

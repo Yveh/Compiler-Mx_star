@@ -37,6 +37,12 @@ public:
             it--;
             return *this;
         }
+        std::string first() {
+            return it->first;
+        }
+        T& second() {
+            return (*vec)[it->second];
+        }
         std::pair<std::string, T> operator*() const
         {
             return std::make_pair(it->first, (*vec)[it->second]);
@@ -60,6 +66,7 @@ public:
     bool insert(std::pair<std::string, T> p);
     bool count(std::string s);
     T & find(std::string s);
+    int getOrder(std::string s);
     void beginScope();
     void endScope();
 };
@@ -120,10 +127,15 @@ void SymbolTable<T>::endScope() {
             hash[ref[info.second]] = info.second;
         } else if (info.first == 1) {
             hash.erase(ref[info.second]);
-            vec.pop_back();
-            ref.pop_back();
-            ord--;
         }
     } while (info.first != 0);
     mark = info.second;
+}
+
+template<typename T>
+int SymbolTable<T>::getOrder(std::string s) {
+    if (count(s))
+        return hash[s];
+    else
+        return -1;
 }

@@ -27,7 +27,7 @@ class ASTExprMemberAccess;
 class ASTExprVar;
 class ASTExprLiteral;
 
-class ASTVisitor {
+class ASTVisitor : public std::enable_shared_from_this<ASTVisitor> {
 public:
     virtual void visit(std::shared_ptr<ASTNode> node);
     virtual void visit(std::shared_ptr<ASTRoot> node);

@@ -2,22 +2,32 @@
 
 #include <memory>
 #include <utility>
+#include <stack>
 
 #include "ASTVisitor.h"
 #include "ASTNode.h"
-#include "Env.h"
-#include "SemanticIssue.h"
 #include "Builtin.h"
+#include "IR.h"
+#include "IRProgram.h"
 
-class TypeChecker : public ASTVisitor {
+class IRBuilder : public ASTVisitor {
 public:
-    std::shared_ptr<Env> env;
-    std::shared_ptr<SemanticIssue> issue;
-    int inClass = 0, inLoop = 0;
-    bool hasReturn = false;
-    std::string className, funcName;
-    void createEnv(std::shared_ptr<ASTRoot> node);
-    void typeCheck(std::shared_ptr<ASTRoot> node);
+    std::shared_ptr<IRProgram> prog;
+
+    std::shared_ptr<IRBlock> _block;
+    IROperand _opr, _obj;
+    bool _inClass;
+    std::shared_ptr<IRClass> _objPointer;
+    std::string _className;
+    bool hasReturn, hasContinue , hasBreak;
+    std::stack<std::shared_ptr<IRBlock>> continueTo, breakTo;
+
+    IROperand::type_t RegFromMx(type_t type);
+    IROperand::type_t ImmFromMx(type_t type);
+    void createArray(std::shared_ptr<ASTExprNew> node, int deep);
+    IROperand loadOperand(IROperand x);
+
+    void createIR(std::shared_ptr<ASTRoot> node);
 
     virtual void visit(std::shared_ptr<ASTNode> node) override;
     virtual void visit(std::shared_ptr<ASTRoot> node) override;
@@ -29,7 +39,6 @@ public:
     virtual void visit(std::shared_ptr<ASTStmtWhile> node) override;
     virtual void visit(std::shared_ptr<ASTStmtIf> node) override;
     virtual void visit(std::shared_ptr<ASTStmtExpr> node) override;
-    virtual void visit(std::shared_ptr<ASTClassDecl> node) override;
     virtual void visit(std::shared_ptr<ASTBlock> node) override;
     virtual void visit(std::shared_ptr<ASTFuncDecl> node) override;
     virtual void visit(std::shared_ptr<ASTVarDecl> node) override;
@@ -44,8 +53,5 @@ public:
     virtual void visit(std::shared_ptr<ASTExprVar> node) override;
     virtual void visit(std::shared_ptr<ASTExprLiteral> node) override;
 
-    TypeChecker(std::shared_ptr<SemanticIssue> _issue, std::shared_ptr<Env> _env) {
-        env = std::move(_env);
-        issue = std::move(_issue);
-    }
+    IRBuilder(std::shared_ptr<IRProgram> _prog);
 };

@@ -7,17 +7,17 @@ antlrcpp::Any ASTBuilder::visitProg(Mx_starParser::ProgContext *ctx) {
     for (auto child : ctx->classdeclaration()) {
         visit(child);
         node->classList.push_back(_node);
-        children.push_back(std::make_pair(child->getStart()->getStartIndex(), _node));
+        children.emplace_back(child->getStart()->getStartIndex(), _node);
     }
     for (auto child : ctx->vardeclaration()) {
         visit(child);
         node->varList.push_back(_node);
-        children.push_back(std::make_pair(child->getStart()->getStartIndex(), _node));
+        children.emplace_back(child->getStart()->getStartIndex(), _node);
     }
     for (auto child : ctx->functiondeclaration()) {
         visit(child);
         node->funcList.push_back(_node);
-        children.push_back(std::make_pair(child->getStart()->getStartIndex(), _node));
+        children.emplace_back(child->getStart()->getStartIndex(), _node);
     }
     std::sort(children.begin(), children.end());
     for (auto child : children)
@@ -540,6 +540,7 @@ antlrcpp::Any ASTBuilder::visitLiteral(Mx_starParser::LiteralContext *ctx) {
         }
         else if (ctx->Stringliteral()) {
             node->svalue = ctx->Stringliteral()->toString();
+            node->svalue = node->svalue.substr(1, node->svalue.size() - 2);
             node->exprType = typeString;
         }
         else {

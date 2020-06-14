@@ -18,7 +18,19 @@ bool type_t::operator!=(const type_t &rhs) const {
 }
 
 bool type_t::isClass() {
-    return kind == ty_class;
+    return kind == ty_class && name != "string";
+}
+
+int type_t::size() {
+    if (kind == ty_bool)
+        return 1;
+    else if (kind == ty_int)
+        return 4;
+    else if (kind == ty_class) {
+        return 4;
+    }
+    else
+        return 0;
 }
 
 

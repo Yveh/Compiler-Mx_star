@@ -16,10 +16,10 @@ namespace atn {
   ///
   /// <ul>
   ///
-  /// <li>Solid edges marked with an &#0949; indicate a required
+  /// <li>Solid next marked with an &#0949; indicate a required
   /// <seealso cref="EpsilonTransition"/>.</li>
   ///
-  /// <li>Dashed edges indicate locations where any transition derived from
+  /// <li>Dashed next indicate locations where any transition derived from
   /// <seealso cref="Transition"/> might appear.</li>
   ///
   /// <li>Dashed nodes are place holders for either a sequence of linked

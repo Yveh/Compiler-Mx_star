@@ -148,7 +148,7 @@ size_t LexerATNSimulator::execATN(CharStream *input, dfa::DFAState *ds0) {
     // a lot and making things more complicated algorithmically.
     // This optimization makes a lot of sense for loops within DFA.
     // A character will take us back to an existing DFA state
-    // that already has lots of edges out of it. e.g., .* in comments.
+    // that already has lots of next out of it. e.g., .* in comments.
     dfa::DFAState *target = getExistingTargetState(s, t);
     if (target == nullptr) {
       target = computeTargetState(input, s, t);
@@ -186,7 +186,7 @@ dfa::DFAState *LexerATNSimulator::getExistingTargetState(dfa::DFAState *s, size_
   if (t <= MAX_DFA_EDGE) {
     auto iterator = s->edges.find(t - MIN_DFA_EDGE);
 #if DEBUG_ATN == 1
-    if (iterator != s->edges.end()) {
+    if (iterator != s->next.end()) {
       std::cout << std::string("reuse state ") << s->stateNumber << std::string(" edge to ") << iterator->second->stateNumber << std::endl;
     }
 #endif
@@ -526,7 +526,7 @@ dfa::DFAState *LexerATNSimulator::addDFAEdge(dfa::DFAState *from, size_t t, ATNC
 
 void LexerATNSimulator::addDFAEdge(dfa::DFAState *p, size_t t, dfa::DFAState *q) {
   if (/*t < MIN_DFA_EDGE ||*/ t > MAX_DFA_EDGE) { // MIN_DFA_EDGE is 0
-    // Only track edges within the DFA bounds
+    // Only track next within the DFA bounds
     return;
   }
 

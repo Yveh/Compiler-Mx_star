@@ -65,7 +65,7 @@ std::vector<size_t> ATNSerializer::serialize() {
   std::unordered_map<misc::IntervalSet, int> setIndices;
   std::vector<misc::IntervalSet> sets;
 
-  // dump states, count edges and collect sets while doing so
+  // dump states, count next and collect sets while doing so
   std::vector<size_t> nonGreedyStates;
   std::vector<size_t> precedenceStates;
   data.push_back(atn->states.size());
@@ -101,7 +101,7 @@ std::vector<size_t> ATNSerializer::serialize() {
     }
 
     if (s->getStateType() != ATNState::RULE_STOP) {
-      // the deserializer can trivially derive these edges, so there's no need
+      // the deserializer can trivially derive these next, so there's no need
       // to serialize them
       nedges += s->transitions.size();
     }

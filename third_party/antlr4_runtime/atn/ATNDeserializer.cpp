@@ -320,7 +320,7 @@ ATN ATNDeserializer::deserialize(const std::vector<uint16_t>& input) {
     p += 6;
   }
 
-  // edges for rule stop states can be derived, so they aren't serialized
+  // next for rule stop states can be derived, so they aren't serialized
   for (ATNState *state : atn.states) {
     for (size_t i = 0; i < state->transitions.size(); i++) {
       Transition *t = state->transitions[i];

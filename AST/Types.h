@@ -4,17 +4,16 @@
 
 class type_t {
 public:
-
-    enum type_et {ty_void, ty_null, ty_bool, ty_int, ty_string, ty_class, ty_func};
+    enum type_et {ty_void, ty_null, ty_bool, ty_int, ty_class};
     type_et kind;
     std::string name;
-    int dim;
+    int dim, id;
 
     type_t() = default;
     type_t(type_et _kind, std::string _name, int _dim);
 
     bool isClass();
-
+    int size();
     bool operator == (const type_t &rhs) const;
     bool operator != (const type_t &rhs) const;
 };

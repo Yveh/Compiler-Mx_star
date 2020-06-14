@@ -55,8 +55,8 @@ namespace dfa {
 
     std::unique_ptr<atn::ATNConfigSet> configs;
 
-    /// {@code edges[symbol]} points to target of symbol. Shift up by 1 so (-1)
-    ///  <seealso cref="Token#EOF"/> maps to {@code edges[0]}.
+    /// {@code next[symbol]} points to target of symbol. Shift up by 1 so (-1)
+    ///  <seealso cref="Token#EOF"/> maps to {@code next[0]}.
     // ml: this is a sparse list, so we use a map instead of a vector.
     //     Watch out: we no longer have the -1 offset, as it isn't needed anymore.
     std::unordered_map<size_t, DFAState *> edges;

@@ -983,7 +983,7 @@ bool ParserATNSimulator::canDropLoopEntryEdgeInLeftRecursiveRule(ATNConfig *conf
   BlockEndState *blockEndState = (BlockEndState *)atn.states[blockEndStateNum];
 
   // Verify that the top of each stack context leads to loop entry/exit
-  // state through epsilon edges and w/o leaving rule.
+  // state through epsilon next and w/o leaving rule.
   for (size_t i = 0; i < numCtxs; i++) {                           // for each stack context
     size_t returnStateNumber = config->context->getReturnState(i);
     ATNState *returnState = atn.states[returnStateNumber];
@@ -1205,7 +1205,7 @@ std::string ParserATNSimulator::getLookaheadName(TokenStream *input) {
 void ParserATNSimulator::dumpDeadEndConfigs(NoViableAltException &nvae) {
   std::cerr << "dead end configs: ";
   for (auto c : nvae.getDeadEndConfigs()->configs) {
-    std::string trans = "no edges";
+    std::string trans = "no next";
     if (c->state->transitions.size() > 0) {
       Transition *t = c->state->transitions[0];
       if (is<AtomTransition*>(t)) {

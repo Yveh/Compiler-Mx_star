@@ -29,9 +29,9 @@ void TypeChecker::createEnv(std::shared_ptr<ASTRoot> node) {
             else if (func->retType != typeNull && func->name == obj->name)
                 issue->issue(func->pos, "constructor cannot have a return type");
             else {
+                funcInfo finfo;
                 if (func->retType == typeNull)
                     func->retType = typeVoid;
-                funcInfo finfo;
                 finfo.retType = func->retType;
                 // check parameters
                 for (auto vchild : func->paras) {
@@ -74,6 +74,8 @@ void TypeChecker::createEnv(std::shared_ptr<ASTRoot> node) {
             // check parameters
             for (auto vchild : func->paras) {
                 auto para = std::dynamic_pointer_cast<ASTVarDecl>(vchild);
+                if (para->varType.isClass() && para->varType.name != "string")
+                    para->varType.id = env->classTable.getOrder(para->varType.name);
                 finfo.parasType.push_back(para->varType);
             }
             if (!env->funcTable.insert(func->name, finfo))
@@ -113,22 +115,22 @@ void TypeChecker::visit(std::shared_ptr<ASTStmt> node) {
 }
 
 void TypeChecker::visit(std::shared_ptr<ASTStmtBreak> node) {
-    if (env->inLoop == 0)
+    if (inLoop == 0)
         issue->issue(node->pos, "'break' statement not in loop");
 }
 
 void TypeChecker::visit(std::shared_ptr<ASTStmtContinue> node) {
-    if (env->inLoop == 0)
+    if (inLoop == 0)
         issue->issue(node->pos, "'continue' statement not in loop");
 }
 
 void TypeChecker::visit(std::shared_ptr<ASTStmtReturn> node) {
     type_t expectedType;
-    env->hasReturn = true;
-    if (env->inClass > 0)
-        expectedType = env->classTable.find(env->className).memberFunc.find(env->funcName).retType;
+    hasReturn = true;
+    if (inClass > 0)
+        expectedType = env->classTable.find(className).memberFunc.find(funcName).retType;
     else
-        expectedType = env->funcTable.find(env->funcName).retType;
+        expectedType = env->funcTable.find(funcName).retType;
 
     if (node->retValue) {
         auto retValue = std::dynamic_pointer_cast<ASTExpr>(node->retValue);
@@ -146,7 +148,7 @@ void TypeChecker::visit(std::shared_ptr<ASTStmtReturn> node) {
 
 void TypeChecker::visit(std::shared_ptr<ASTStmtFor> node) {
     env->varTable.beginScope();
-    env->inLoop += 1;
+    inLoop += 1;
     ASTVisitor::visit(node);
     if (node->cond) {
         auto child = std::dynamic_pointer_cast<ASTExpr>(node->cond);
@@ -154,18 +156,18 @@ void TypeChecker::visit(std::shared_ptr<ASTStmtFor> node) {
             issue->issue(child->pos, "requires bool type for condition of for-loop");
     }
     env->varTable.endScope();
-    env->inLoop -= 1;
+    inLoop -= 1;
 }
 
 void TypeChecker::visit(std::shared_ptr<ASTStmtWhile> node) {
     env->varTable.beginScope();
-    env->inLoop += 1;
+    inLoop += 1;
     ASTVisitor::visit(node);
     auto child = std::dynamic_pointer_cast<ASTExpr>(node->cond);
     if (child->exprType != typeBool)
         issue->issue(child->pos, "requires bool type for condition of while-loop");
     env->varTable.endScope();
-    env->inLoop -= 1;
+    inLoop -= 1;
 }
 
 void TypeChecker::visit(std::shared_ptr<ASTStmtIf> node) {
@@ -192,17 +194,18 @@ void TypeChecker::visit(std::shared_ptr<ASTStmtExpr> node) {
 void TypeChecker::visit(std::shared_ptr<ASTClassDecl> node) {
     env->funcTable.beginScope();
     env->varTable.beginScope();
-    env->inClass += 1;
-    env->className = node->name;
+    inClass += 1;
+    className = node->name;
     for (auto child : env->classTable.find(node->name).memberFunc)
         env->funcTable.insert(child);
-    for (auto child : env->classTable.find(node->name).memberVar)
+    for (auto child : env->classTable.find(node->name).memberVar) {
         env->varTable.insert(child);
+    }
     for (auto child : node->funcList)
         visit(std::dynamic_pointer_cast<ASTFuncDecl>(child));
     env->funcTable.endScope();
     env->varTable.endScope();
-    env->inClass -= 1;
+    inClass -= 1;
 }
 
 void TypeChecker::visit(std::shared_ptr<ASTBlock> node) {
@@ -213,14 +216,12 @@ void TypeChecker::visit(std::shared_ptr<ASTBlock> node) {
 
 void TypeChecker::visit(std::shared_ptr<ASTFuncDecl> node) {
     env->varTable.beginScope();
-    env->inFunc = true;
-    env->hasReturn = false;
-    env->funcName = node->name;
+    hasReturn = false;
+    funcName = node->name;
     ASTVisitor::visit(node);
     env->varTable.endScope();
-    if (!env->hasReturn && node->retType != typeVoid && node->name != "main")
+    if (!hasReturn && node->retType != typeVoid && node->name != "main")
         issue->issue(node->pos, "Non-void function must have a return value");
-    env->inFunc = false;
 }
 
 void TypeChecker::visit(std::shared_ptr<ASTVarDecl> node) {
@@ -236,6 +237,7 @@ void TypeChecker::visit(std::shared_ptr<ASTVarDecl> node) {
             issue->issue(node->pos, "definition of class '" + node->varType.name + "' doesnot exist");
         else if (!env->varTable.insert(node->name[idx], vinfo))
             issue->issue(node->pos, "redefinition of '" + node->name[idx] + "'");
+        node->id.push_back(env->varTable.getOrder(node->name[idx]));
         if (node->initValue[idx]) {
             auto initValue = std::dynamic_pointer_cast<ASTExpr>(node->initValue[idx]);
             if (initValue->exprType != node->varType && !(node->varType.dim > 0 && initValue->exprType == typeNull) &&
@@ -396,7 +398,8 @@ void TypeChecker::visit(std::shared_ptr<ASTExprFuncCall> node) {
             funcInfo expectedFunc = env->funcTable.find(node->name);
             if (node->paras.size() != expectedFunc.parasType.size()) {
                 issue->issue(node->pos, "number of function parameters doesnot match");
-            } else {
+            }
+            else {
                 bool flag = true;
                 for (int idx = 0; idx < node->paras.size(); idx++) {
                     auto para = std::dynamic_pointer_cast<ASTExpr>(node->paras[idx]);
@@ -472,10 +475,10 @@ void TypeChecker::visit(std::shared_ptr<ASTExprMemberAccess> node) {
 
 void TypeChecker::visit(std::shared_ptr<ASTExprVar> node) {
     if (node->isThis) {
-        if (env->inClass == 0)
+        if (inClass == 0)
             issue->issue(node->pos, "'this' not in class");
         node->valueType = rvalue;
-        node->exprType = type_t(type_t::ty_class, env->className, 0);
+        node->exprType = type_t(type_t::ty_class, className, 0);
     }
     else {
         if (!Builtin::checkVarName(node->name))
@@ -484,11 +487,11 @@ void TypeChecker::visit(std::shared_ptr<ASTExprVar> node) {
             issue->issue(node->pos, "undefined variable '" + node->name + "'");
         else
             node->exprType = env->varTable.find(node->name).varType;
+        node->id = env->varTable.getOrder(node->name);
         node->valueType = lvalue;
     }
 }
 
 void TypeChecker::visit(std::shared_ptr<ASTExprLiteral> node) {}
-
 
 
