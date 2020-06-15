@@ -52,6 +52,7 @@ public:
 
 class RVBlock {
 public:
+    std::string funcName;
     int label;
     std::vector<std::shared_ptr<RVInst>> insts;
     std::vector<std::shared_ptr<RVBlock>> pre, succ;

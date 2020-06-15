@@ -18,16 +18,17 @@
 
 int main(int argc, char *argv[]){
     /* If Debug */
-//    const std::string filepath("../local-judge/testcase/codegen/e2.mx");
+//    const std::string filepath("../local-judge/testcase/codegen/t37.mx");
     const std::string filepath("../test.mx");
     std::ifstream ifs;
     ifs.open(filepath);
     if (!ifs.good()) {
-        std::cout << "bad";
+        std::cerr << "bad" << std::endl;
     }
     antlr4::ANTLRInputStream input(ifs);
     /* If OnlineJudge */
 //    antlr4::ANTLRInputStream input(std::cin);
+
     /* ************** */
     Mx_starLexer lexer(&input);
     antlr4::CommonTokenStream tokens(&lexer);
@@ -65,12 +66,27 @@ int main(int argc, char *argv[]){
     std::shared_ptr<SSADestructor> SSAdestructor = std::make_shared<SSADestructor>();
     SSAdestructor->run(IRProg);
     IRProg->outputIR(std::cout);
+
+    const std::string SSAFilePath = std::string("../SSA.ll");
+    std::ofstream ofsSSA(SSAFilePath);
+    IRProg->outputIR(ofsSSA);
+
     std::shared_ptr<RVProgram> RVProg = std::make_shared<RVProgram>();
     std::shared_ptr<InstSelector> RVbuilder = std::make_shared<InstSelector>(IRProg, RVProg);
     RVbuilder->run();
     RVProg->outputIR(std::cout);
+
+    const std::string RVFilePath("../RV.s");
+    std::ofstream ofsRV(RVFilePath);
+    RVProg->outputIR(ofsRV);
+
     std::shared_ptr<RegAllocation> RegAllocator = std::make_shared<RegAllocation>(RVProg);
     RegAllocator->run();
     RVProg->outputIR(std::cout);
+
+    const std::string FinalFilePath = std::string("../test.s");
+    std::ofstream ofsFinal(FinalFilePath);
+    RVProg->outputIR(ofsFinal);
+
     return 0;
 }

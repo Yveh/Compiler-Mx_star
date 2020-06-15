@@ -278,7 +278,6 @@ void IRBuilder::visit(std::shared_ptr<ASTStmtReturn> node) {
         visit(std::dynamic_pointer_cast<ASTExpr>(node->retValue));
         _opr = loadOperand(_opr);
         retValues.push_back(_opr);
-        _block->insts.push_back(std::make_shared<IRReturn>(_opr));
     }
     else {
         _block->insts.push_back(std::make_shared<IRReturn>());

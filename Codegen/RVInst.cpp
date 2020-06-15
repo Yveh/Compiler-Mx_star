@@ -12,7 +12,7 @@ std::string RVFunction::to_string() {
 RVBlock::RVBlock(int _label) : label(_label) {}
 
 std::string RVBlock::to_string() {
-    return ".bb" + std::to_string(label);
+    return "." + funcName + "_.bb" + std::to_string(label);
 }
 
 RVReg::RVReg(int _id, int _size, bool _is_global, bool _is_constString, bool _is_special) : id(_id), size(_size), is_global(_is_global), is_constString(_is_constString), is_special(_is_special) {}
@@ -425,7 +425,7 @@ void RVRtype::replaceColor(int a, int b) {
 }
 
 std::string RVCall::to_string() {
-    return "call" + func->to_string();
+    return "call " + func->to_string();
 }
 
 std::set<int> RVCall::getUse() {

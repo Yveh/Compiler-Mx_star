@@ -17,11 +17,12 @@ RVReg RVProgram::getGlobal(int _id) {
 }
 
 void RVProgram::outputIR(std::ostream &ofs) {
+    ofs << "\t.text" << std::endl;
     for (auto func : functions) {
         ofs << "\t.globl\t" << func->name << std::endl;
-        ofs << "\t.p2align\t1" << func->name << std::endl;
+        ofs << "\t.p2align\t1" << std::endl;
         ofs << "\t.type\t" << func->name << ",@function" << std::endl;
-        ofs << "." << func->name << ":" << std::endl;
+        ofs << func->name << ":" << std::endl;
         for (auto blk : func->blocks)
             outputBlock(blk, ofs);
         ofs << std::endl;
@@ -29,7 +30,7 @@ void RVProgram::outputIR(std::ostream &ofs) {
     for (auto var : ref_global) {
         ofs << "\t.type\t" << var.second.to_string() << ",@object" << std::endl;
         ofs << "\t.section\t.data" << std::endl;
-        ofs << "\t.globl\t" << var.second.to_string();
+        ofs << "\t.globl\t" << var.second.to_string() << std::endl;
         ofs << "\t.p2align\t2" << std::endl;
         ofs << var.second.to_string() <<  ":" << std::endl;
         ofs << "\t.zero\t" << var.second.size << std::endl;
@@ -45,7 +46,7 @@ void RVProgram::outputIR(std::ostream &ofs) {
 }
 
 void RVProgram::outputBlock(std::shared_ptr<RVBlock> blk, std::ostream &ofs) {
-    ofs << ".bb" << blk->label << ":" << std::endl;
+    ofs << "." << blk->funcName << "_.bb" << blk->label << ":" << std::endl;
     for (auto inst : blk->insts)
         ofs << "\t" << inst->to_string() << std::endl;
 }

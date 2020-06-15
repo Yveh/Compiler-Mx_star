@@ -322,8 +322,8 @@ void RegAllocation::freeze() {
 
 void RegAllocation::freezeMoves(int x) {
     for (auto move : nodeMoves(x)) {
-        int u = move->rd.id;
-        int v = move->rs.id;
+        int u = move->rd.is_special ? -move->rd.id : move->rd.id;
+        int v = move->rs.is_special ? -move->rs.id : move->rs.id;
         int y;
         if (getAlias(x) == getAlias(v)) {
             y = getAlias(u);

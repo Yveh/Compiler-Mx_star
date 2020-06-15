@@ -14,14 +14,13 @@ void Liveness::runForFunction(std::shared_ptr<RVFunction> func) {
 
 void Liveness::runForBlock(std::shared_ptr<RVBlock> blk) {
     for (auto inst : blk->insts) {
-        std::set<int> Iuse;
-        for (auto x : Iuse) {
-            BUse[blk].insert(x);
-        }
-        std::set<int> Idef;
-        for (auto x : Idef) {
+        std::set<int> Iuse = inst->getUse();
+        for (auto x : Iuse)
+            if (!BDef[blk].count(x))
+                BUse[blk].insert(x);
+        std::set<int> Idef = inst->getDef();
+        for (auto x : Idef)
             BDef[blk].insert(x);
-        }
     }
     blk->liveIn.clear();
     blk->liveOut.clear();
