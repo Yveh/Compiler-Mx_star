@@ -1,7 +1,7 @@
 #include "InstSelector.h"
 
 InstSelector::InstSelector(std::shared_ptr<IRProgram> _old, std::shared_ptr<RVProgram> _new) : IRprog(_old), RVprog(_new) {
-    id_n = 0;
+    id_n = 1;
 }
 
 RVReg InstSelector::RegTrans(IROperand operand) {
@@ -96,8 +96,8 @@ void InstSelector::runForBlock(std::shared_ptr<IRBlock> blk) {
                     case IRBinary::Mul: sop = Sop::Mul; break;
                     case IRBinary::Sdiv: sop = Sop::Div; break;
                     case IRBinary::Srem: sop = Sop::Rem; break;
-                    case IRBinary::Shl: sop = Sop::Shl; break;
-                    case IRBinary::Ashr: sop = Sop::Ashr; break;
+                    case IRBinary::Shl: sop = Sop::Sll; break;
+                    case IRBinary::Ashr: sop = Sop::Sra; break;
                     default:
                         is_cmp = true;
                 }
@@ -181,9 +181,21 @@ void InstSelector::runForBlock(std::shared_ptr<IRBlock> blk) {
 
 void InstSelector::runForFunction(std::shared_ptr<IRFunction> func) {
     auto rFunc = RVprog->ref_function[func];
-    id_n = 0;
+    id_n = 1;
     RVprog->ref_reg.clear();
     _block = RVprog->ref_block[func->inBlock];
+
+    calleeRegs.clear();
+    for (auto id : calleeSavedRegNames) {
+        RVReg tmp(newLabel());
+        _block->insts.push_back(std::make_shared<RVMv>(tmp, RVPReg(id)));
+        calleeRegs[id] = tmp;
+    }
+    RVReg Vra(newLabel());
+    _block->insts.push_back(std::make_shared<RVMv>(Vra, RVReg_sp()));
+
+
+
     for (int i = 0; i < std::min(8, int(func->paras.size())); ++i) {
         RVReg reg = RVReg(newLabel(), func->paras[i].size());
         RVprog->ref_reg[func->paras[i].id] = reg;
@@ -198,6 +210,16 @@ void InstSelector::runForFunction(std::shared_ptr<IRFunction> func) {
     }
     for (auto blk : func->blocks)
         runForBlock(blk);
+
+    _block = RVprog->ref_block[func->outBlock];
+    for (auto id : calleeSavedRegNames) {
+        RVReg tmp(newLabel());
+        _block->insts.push_back(std::make_shared<RVMv>(RVPReg(id), tmp));
+        calleeRegs[id] = tmp;
+    }
+    _block->insts.push_back(std::make_shared<RVMv>(RVReg_sp(), Vra));
+    _block->insts.push_back(std::make_shared<RVRet>());
+    rFunc->regcnt = id_n;
 }
 
 void InstSelector::run() {
@@ -206,7 +228,6 @@ void InstSelector::run() {
         RVReg reg = RVGReg(newLabel(), var.size());
         RVprog->ref_global[var.id] = reg;
     }
-    id_n = 0;
 
     for (auto func : IRprog->func) {
         if (func->isBuiltin) {
@@ -226,6 +247,15 @@ void InstSelector::run() {
                 std::shared_ptr<RVBlock> rBlock = std::make_shared<RVBlock>(tmp++);
                 RVprog->ref_block[blk] = rBlock;
                 rFunc->blocks.push_back(rBlock);
+                rFunc->inBlock = RVprog->ref_block[func->inBlock];
+                rFunc->outBlock = RVprog->ref_block[func->outBlock];
+            }
+            for (auto blk : func->blocks) {
+                auto rBlock = RVprog->ref_block[blk];
+                for (auto x : blk->pre)
+                    rBlock->pre.push_back(RVprog->ref_block[x]);
+                for (auto x : blk->next)
+                    rBlock->succ.push_back(RVprog->ref_block[x]);
             }
         }
     }
@@ -289,6 +319,16 @@ void InstSelector::makeCmp(IROperand src1, IROperand src2, IRBinary::op_t op, RV
 }
 
 void InstSelector::makeBinary(IROperand src1, IROperand src2, Sop op, RVReg dst) {
+    if (op == Mul || op == Div || op == Rem)
+        _block->insts.push_back(std::make_shared<RVRtype>(dst, RegTrans(src1), RegTrans(src2), op));
+    else if (op == Sub) {
+        if (src2.is_imm()) {
+            _block->insts.push_back(std::make_shared<RVItype>(dst, RegTrans(src1), RVImm(-src2.id), Sop::Add));
+        }
+        else {
+            _block->insts.push_back(std::make_shared<RVRtype>(dst, RegTrans(src1), RegTrans(src2), op));
+        }
+    }
     if (src1.is_imm()) {
         _block->insts.push_back(std::make_shared<RVItype>(dst, RegTrans(src2), RVImm(src1.id), op));
     }

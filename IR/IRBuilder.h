@@ -21,6 +21,8 @@ public:
     std::string _className;
     bool hasReturn, hasContinue , hasBreak;
     std::stack<std::shared_ptr<IRBlock>> continueTo, breakTo;
+    std::vector<IROperand> retValues;
+    std::vector<std::shared_ptr<IRBlock>> retBlocks;
 
     IROperand::type_t RegFromMx(type_t type);
     IROperand::type_t ImmFromMx(type_t type);

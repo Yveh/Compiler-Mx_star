@@ -14,6 +14,8 @@ public:
 
     std::shared_ptr<RVBlock> _block;
 
+    std::map<int, RVReg> calleeRegs;
+
     int id_n;
     int newLabel();
     RVReg RegTrans(IROperand operand);

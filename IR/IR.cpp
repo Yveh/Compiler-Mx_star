@@ -149,7 +149,6 @@ std::string IRReturn::to_string() {
 IRReturn::IRReturn(IROperand _value) : value(_value) {}
 
 IRFunction::IRFunction(std::string _name) : name(_name) {
-    inBlock = std::make_shared<IRBlock>(0);
     isBuiltin = 0;
 }
 

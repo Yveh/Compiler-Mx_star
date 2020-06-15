@@ -177,6 +177,8 @@ void IRBuilder::visit(std::shared_ptr<ASTRoot> node) {
         auto func = std::dynamic_pointer_cast<ASTFuncDecl>(child);
         prog->func.push_back(std::make_shared<IRFunction>(func->name));
         prog->func.back()->retType = IROperand(RegFromMx(func->retType));
+        prog->func.back()->inBlock = std::make_shared<IRBlock>(prog->newLabel());
+        prog->func.back()->outBlock = std::make_shared<IRBlock>(prog->newLabel());
         for (auto pchild : func->paras) {
             auto para = std::dynamic_pointer_cast<ASTVarDecl>(pchild);
             IROperand tmp(RegFromMx(para->varType), prog->newLabel());
@@ -200,6 +202,8 @@ void IRBuilder::visit(std::shared_ptr<ASTRoot> node) {
             auto func = std::dynamic_pointer_cast<ASTFuncDecl>(fchild);
             prog->func.push_back(std::make_shared<IRFunction>(func->name));
             prog->func.back()->retType = IROperand(RegFromMx(func->retType));
+            prog->func.back()->inBlock = std::make_shared<IRBlock>(prog->newLabel());
+            prog->func.back()->outBlock = std::make_shared<IRBlock>(prog->newLabel());
             prog->func.back()->paras.push_back(IROperandReg32(prog->newLabel()));
             for (auto pchild : func->paras) {
                 auto para = std::dynamic_pointer_cast<ASTVarDecl>(pchild);
@@ -228,12 +232,10 @@ void IRBuilder::visit(std::shared_ptr<ASTRoot> node) {
     }
     for (auto child : node->funcList)
         if (std::dynamic_pointer_cast<ASTFuncDecl>(child)->name == "main") {
-            hasReturn = hasContinue = hasBreak = false;
             visit(std::dynamic_pointer_cast<ASTFuncDecl>(child));
         }
     for (auto child : node->funcList)
         if (std::dynamic_pointer_cast<ASTFuncDecl>(child)->name != "main") {
-            hasReturn = hasContinue = hasBreak = false;
             visit(std::dynamic_pointer_cast<ASTFuncDecl>(child));
         }
     for (auto child : node->classList) {
@@ -241,7 +243,6 @@ void IRBuilder::visit(std::shared_ptr<ASTRoot> node) {
         _inClass = true;
         _objPointer = prog->getClass(obj->name);
         for (auto fchild : obj->funcList) {
-            hasReturn = hasContinue = hasBreak = false;
             visit(std::dynamic_pointer_cast<ASTFuncDecl>(fchild));
         }
         _inClass = false;
@@ -269,11 +270,13 @@ void IRBuilder::visit(std::shared_ptr<ASTStmtReturn> node) {
     if (node->retValue) {
         visit(std::dynamic_pointer_cast<ASTExpr>(node->retValue));
         _opr = loadOperand(_opr);
+        retValues.push_back(_opr);
         _block->insts.push_back(std::make_shared<IRReturn>(_opr));
     }
     else {
         _block->insts.push_back(std::make_shared<IRReturn>());
     }
+    retBlocks.push_back(_block);
     hasReturn = true;
 }
 
@@ -385,10 +388,29 @@ void IRBuilder::visit(std::shared_ptr<ASTFuncDecl> node) {
         _block = prog->getFunc(_objPointer->name + "_" + node->name)->inBlock;
     else if (node->name != "main")
         _block = prog->getFunc(node->name)->inBlock;
+    hasReturn = hasBreak = hasContinue = false;
+    retValues.clear();
+    retBlocks.clear();
     for (auto child : node->stmts)
         visit(std::dynamic_pointer_cast<ASTStmt>(child));
-    if (!hasReturn)
-        _block->insts.push_back(std::make_shared<IRReturn>());
+    if (!hasReturn) {
+        retBlocks.push_back(_block);
+        retValues.push_back(IROperand(ImmFromMx(node->retType), 0));
+    }
+    auto func = prog->getFunc(node->name);
+    for (int i = 0; i < retBlocks.size(); ++i)
+        retBlocks[i]->insts.push_back(std::make_shared<IRJump>(func->outBlock));
+    if (func->retType.is_void()) {
+        func->outBlock->insts.push_back(std::make_shared<IRReturn>());
+    }
+    else {
+        IROperand tmp(RegFromMx(node->retType), prog->newLabel());
+        auto phi = std::make_shared<IRPhi>(tmp);
+        phi->blocks = retBlocks;
+        phi->values = retValues;
+        func->outBlock->insts.push_back(phi);
+        func->outBlock->insts.push_back(std::make_shared<IRReturn>(tmp));
+    }
 }
 
 void IRBuilder::visit(std::shared_ptr<ASTVarDecl> node) {

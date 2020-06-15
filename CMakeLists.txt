@@ -38,6 +38,9 @@ set(Codegen_src
         ${PROJECT_SOURCE_DIR}/Codegen/RVInst.cpp
         ${PROJECT_SOURCE_DIR}/Codegen/RVProgram.cpp
         ${PROJECT_SOURCE_DIR}/Codegen/InstSelector.cpp
+        ${PROJECT_SOURCE_DIR}/Codegen/RegAllocation.cpp
+        ${PROJECT_SOURCE_DIR}/Codegen/RegInfo.cpp
+        ${PROJECT_SOURCE_DIR}/Codegen/Liveness.cpp
         ${PROJECT_SOURCE_DIR}/Codegen/RegAllocation.cpp)
 add_executable(Compiler-Mx_star ${lexer_parser_src} ${AST_src} ${IR_src} ${Codegen_src} main.cpp)
 target_link_libraries(Compiler-Mx_star antlr4_static)

@@ -22,6 +22,6 @@ public:
     RVReg getVar(int _id);
     bool checkGlobal(int _id);
     RVReg getGlobal(int _id);
-    void outputBlock(std::shared_ptr<IRBlock> _blk, std::ostream &ofs);
+    void outputBlock(std::shared_ptr<RVBlock> blk, std::ostream &ofs);
     void outputIR(std::ostream &ofs);
 };

@@ -56,7 +56,7 @@ class IRFunction {
 public:
     std::string name;
     std::vector<std::shared_ptr<IRBlock>> blocks;
-    std::shared_ptr<IRBlock> inBlock;
+    std::shared_ptr<IRBlock> inBlock, outBlock;
     std::vector<IROperand> paras;
     IROperand retType;
     std::set<int> vis;

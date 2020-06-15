@@ -58,12 +58,15 @@ void SSADestructor::runForFunction(std::shared_ptr<IRFunction> func) {
     }
 
     for (auto blk : func->blocks) {
+        pc[blk] = std::make_shared<PCopy_t>();
+    }
+    for (auto blk : func->blocks) {
         std::vector<std::list<std::shared_ptr<IRInst>>::iterator> LazyDelete;
         for (auto it = blk->insts.begin(); it != blk->insts.end(); ++it) {
             if (std::dynamic_pointer_cast<IRPhi>(*it)) {
                 auto inst = std::dynamic_pointer_cast<IRPhi>(*it);
                 for (int i = 0; i < inst->values.size(); ++i) {
-                    inst->blocks[i]->insts.insert(--inst->blocks[i]->insts.end(), std::make_shared<IRMove>(inst->dst, inst->values[i]));
+                    pc[inst->blocks[i]]->add(std::make_shared<IRMove>(inst->dst, inst->values[i]));
                 }
                 LazyDelete.push_back(it);
             }
@@ -71,4 +74,49 @@ void SSADestructor::runForFunction(std::shared_ptr<IRFunction> func) {
         for (auto it : LazyDelete)
             blk->insts.erase(it);
     }
+    for (auto blk : func->blocks)
+        runForBlock(blk);
+}
+
+void SSADestructor::runForBlock(std::shared_ptr<IRBlock> blk) {
+    while (pc[blk]->check()) {
+        bool exist = false;
+        for (auto it = pc[blk]->copies.begin(); it != pc[blk]->copies.end(); ) {
+            if (!pc[blk]->use_cnt.count((*it)->dst) || !pc[blk]->use_cnt[(*it)->dst]) {
+                pc[blk]->use_cnt[(*it)->src] -= 1;
+                blk->insts.insert(--blk->insts.end(), *it);
+                it = pc[blk]->copies.erase(it);
+                exist = true;
+            }
+            else it++;
+        }
+        if (!exist) {
+            for (auto inst : pc[blk]->copies) {
+                if (!(inst->dst == inst->src) && inst->src.is_reg()) {
+                    IROperand tmp(inst->src.type, prog->newLabel());
+                    blk->insts.insert(--blk->insts.end(), std::make_shared<IRMove>(tmp, inst->src));
+                    for (auto& copy : pc[blk]->copies)
+                        if (copy->src == inst->src)
+                            copy->src = tmp;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void SSADestructor::PCopy_t::add(std::shared_ptr<IRMove> inst) {
+        copies.push_back(inst);
+        if (use_cnt.count(inst->src))
+            use_cnt[inst->src] += 1;
+        else
+            use_cnt[inst->src] = 1;
+}
+
+bool SSADestructor::PCopy_t::check() {
+    for (auto inst : copies)
+        if (!(inst->dst == inst->src)) {
+            return true;
+        }
+    return false;
 }

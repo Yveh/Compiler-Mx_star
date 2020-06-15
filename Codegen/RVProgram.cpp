@@ -17,9 +17,35 @@ RVReg RVProgram::getGlobal(int _id) {
 }
 
 void RVProgram::outputIR(std::ostream &ofs) {
-
+    for (auto func : functions) {
+        ofs << "\t.globl\t" << func->name << std::endl;
+        ofs << "\t.p2align\t1" << func->name << std::endl;
+        ofs << "\t.type\t" << func->name << ",@function" << std::endl;
+        ofs << "." << func->name << ":" << std::endl;
+        for (auto blk : func->blocks)
+            outputBlock(blk, ofs);
+        ofs << std::endl;
+    }
+    for (auto var : ref_global) {
+        ofs << "\t.type\t" << var.second.to_string() << ",@object" << std::endl;
+        ofs << "\t.section\t.data" << std::endl;
+        ofs << "\t.globl\t" << var.second.to_string();
+        ofs << "\t.p2align\t2" << std::endl;
+        ofs << var.second.to_string() <<  ":" << std::endl;
+        ofs << "\t.zero\t" << var.second.size << std::endl;
+        ofs << "\t.size\t" << var.second.to_string() << ", " << var.second.size << std::endl << std::endl;
+    }
+    for (int i = 0; i < constString.size(); ++i) {
+        ofs << "\t.type\t" << ".str." << i << " ,@object" << std::endl;
+        ofs << "\t.section\t.rodata" << std::endl;
+        ofs << ".str." << i << " :" << std::endl;
+        ofs << "\t.asciz\t\"" << constString[i] + "\"" << std::endl;
+        ofs << "\t.size\t" << ".str." << i << ", " << constString.size() + 1 << std::endl << std::endl;
+    }
 }
 
-void RVProgram::outputBlock(std::shared_ptr<IRBlock> _blk, std::ostream &ofs) {
-
+void RVProgram::outputBlock(std::shared_ptr<RVBlock> blk, std::ostream &ofs) {
+    ofs << ".bb" << blk->label << ":" << std::endl;
+    for (auto inst : blk->insts)
+        ofs << "\t" << inst->to_string() << std::endl;
 }

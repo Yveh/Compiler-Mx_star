@@ -14,7 +14,7 @@
 #include "RVProgram.h"
 #include "InstSelector.h"
 #include "SSAConstructor.h"
-#include "SSADestructor.h"
+#include "RegAllocation.h"
 
 int main(int argc, char *argv[]){
     /* If Debug */
@@ -68,6 +68,9 @@ int main(int argc, char *argv[]){
     std::shared_ptr<RVProgram> RVProg = std::make_shared<RVProgram>();
     std::shared_ptr<InstSelector> RVbuilder = std::make_shared<InstSelector>(IRProg, RVProg);
     RVbuilder->run();
+    RVProg->outputIR(std::cout);
+    std::shared_ptr<RegAllocation> RegAllocator = std::make_shared<RegAllocation>(RVProg);
+    RegAllocator->run();
     RVProg->outputIR(std::cout);
     return 0;
 }
