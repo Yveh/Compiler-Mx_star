@@ -13,6 +13,24 @@ print:                                  # @print
         addi    sp, sp, 16
         ret
 
+        .globl	println
+        .p2align	2
+        .type	println,@function
+println:                                # @println
+        addi    sp, sp, -16
+        sw      ra, 12(sp)
+        sw      s0, 8(sp)
+        addi    s0, sp, 16
+        sw      a0, -12(s0)
+        lw      a1, -12(s0)
+        lui     a0, %hi(.L.str.3)
+        addi    a0, a0, %lo(.L.str.3)
+        call    printf
+        lw      s0, 8(sp)
+        lw      ra, 12(sp)
+        addi    sp, sp, 16
+        ret
+
         .globl	printInt
         .p2align	2
         .type	printInt,@function
@@ -108,10 +126,10 @@ string_ord:                             # @string_ord
         lbu     a0, 0(a0)
         ret
 
-        .globl	array_size
+        .globl	_size
         .p2align	2
-        .type	array_size,@function
-array_size:                             # @array_size
+        .type	_size,@function
+_size:                                  # @_size
         lw      a0, -4(a0)
         ret
 
@@ -249,3 +267,6 @@ string_greater:                         # @string_greater
 
 .L.str.2:
         .asciz  "%d\n"
+
+.L.str.3:
+        .asciz  "%s\n"

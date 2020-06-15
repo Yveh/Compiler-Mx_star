@@ -52,6 +52,9 @@ void RegAllocation::runForFunction() {
     LivenessAnalyser->runForFunction(_func);
     build();
     makeWorkList();
+//    for (auto x : spillWorkList)
+//        printf("%d ", x);
+//    puts("");
     do {
         if (!simplifyWorkList.empty())
             simplify();
@@ -62,9 +65,13 @@ void RegAllocation::runForFunction() {
         else if (!spillWorkList.empty())
             selectSpill();
     } while(!(simplifyWorkList.empty() && workListMoves.empty() && freezeWorkList.empty() && spillWorkList.empty()));
+//    for (auto x : coalescedNodes)
+//        printf("%d ", x);
+//    puts("");
     assignColors();
     if (!spilledNodes.empty()) {
         rewriteProgram();
+        prog->outputIR(std::cout);
         runForFunction();
     }
 }
@@ -85,7 +92,7 @@ void RegAllocation::build() {
                 workListMoves.insert(inst);
             }
             std::set<int> tmp = (*it)->getDef();
-            tmp.insert(0);
+            live.insert(0);
             for (auto x : tmp)
                 live.insert(x);
             for (auto x : tmp)
@@ -101,17 +108,19 @@ void RegAllocation::build() {
     }
 }
 
-void RegAllocation::addEdge(int x, int y) {
-    if (x != y && !adjSet.count(Edge(x, y))) {
-        adjSet.insert(Edge(x, y));
-        adjSet.insert(Edge(y, x));
-        if (!preColored.count(x)) {
-            adjList[x].insert(y);
-            degree[x] += 1;
+void RegAllocation::addEdge(int u, int v) {
+    if (u == 1 && v == 1)
+        int ha = 3;
+    if (u != v && !adjSet.count(Edge(u, v))) {
+        adjSet.insert(Edge(u, v));
+        adjSet.insert(Edge(v, u));
+        if (!preColored.count(u)) {
+            adjList[u].insert(v);
+            degree[u] += 1;
         }
-        if (!preColored.count(y)) {
-            adjList[y].insert(y);
-            degree[y] += 1;
+        if (!preColored.count(v)) {
+            adjList[v].insert(u);
+            degree[v] += 1;
         }
     }
 }
@@ -122,11 +131,11 @@ void RegAllocation::init() {
         for (auto inst : blk->insts) {
             std::set<int> tmp = inst->getDef();
             for (auto x : tmp)
-                if (x >= 0)
+                if (x > 0)
                     initial.insert(x);
             tmp = inst->getUse();
             for (auto x : tmp)
-                if (x >= 0)
+                if (x > 0)
                     initial.insert(x);
         }
     }
@@ -171,19 +180,17 @@ bool RegAllocation::moveRelated(int x) {
 std::set<std::shared_ptr<RVMv>> RegAllocation::nodeMoves(int x) {
     std::set<std::shared_ptr<RVMv>> ret;
     for (auto mv : moveList[x])
-        if (activeMoves.count(mv) && workListMoves.count(mv))
+        if (activeMoves.count(mv) || workListMoves.count(mv))
             ret.insert(mv);
     return ret;
 }
 
 void RegAllocation::simplify() {
-    for (auto it = simplifyWorkList.begin(); it != simplifyWorkList.end();) {
-        int x = *it;
-        it = simplifyWorkList.erase(it);
-        selectStack.push_back(x);
-        for (auto y : adjacent(x)) {
-            decrementDegree(y);
-        }
+    int x = *simplifyWorkList.begin();
+    simplifyWorkList.erase(simplifyWorkList.begin());
+    selectStack.push_back(x);
+    for (auto y : adjacent(x)) {
+        decrementDegree(y);
     }
 }
 
@@ -272,8 +279,8 @@ bool RegAllocation::OK(int t, int r) {
 }
 
 bool RegAllocation::forAllOK(int u, int v) {
-    for (auto x : adjacent(v))
-        if (!OK(x, u))
+    for (auto w : adjacent(v))
+        if (!OK(w, u))
             return false;
     return true;
 }
@@ -320,22 +327,22 @@ void RegAllocation::freeze() {
     freezeMoves(x);
 }
 
-void RegAllocation::freezeMoves(int x) {
-    for (auto move : nodeMoves(x)) {
-        int u = move->rd.is_special ? -move->rd.id : move->rd.id;
-        int v = move->rs.is_special ? -move->rs.id : move->rs.id;
-        int y;
-        if (getAlias(x) == getAlias(v)) {
-            y = getAlias(u);
+void RegAllocation::freezeMoves(int u) {
+    for (auto move : nodeMoves(u)) {
+        int x = move->rd.is_special ? -move->rd.id : move->rd.id;
+        int y = move->rs.is_special ? -move->rs.id : move->rs.id;
+        int v;
+        if (getAlias(u) == getAlias(y)) {
+            v = getAlias(x);
         }
         else {
-            y = getAlias(v);
+            v = getAlias(y);
         }
         activeMoves.erase(move);
         frozenMoves.insert(move);
-        if (degree[y] < K && nodeMoves(y).empty()) {
-            freezeWorkList.erase(y);
-            simplifyWorkList.insert(y);
+        if (degree[v] < K && nodeMoves(v).empty()) {
+            freezeWorkList.erase(v);
+            simplifyWorkList.insert(v);
         }
     }
 }
@@ -343,7 +350,7 @@ void RegAllocation::freezeMoves(int x) {
 void RegAllocation::selectSpill() {
     //TODO: Can be better
     int m = *spillWorkList.begin();
-    spillWorkList.erase(m);
+    spillWorkList.erase(spillWorkList.begin());
     simplifyWorkList.insert(m);
     freezeMoves(m);
 }
@@ -392,22 +399,21 @@ void RegAllocation::rewriteProgram() {
     for (auto blk : _func->blocks) {
         for (auto it = blk->insts.begin(); it != blk->insts.end(); ++it) {
             auto inst = *it;
-            for (auto x : inst->getUse()) {
+            for (auto x : inst->getUse())
                 if (spilledNodes.count(x)) {
-                    if (inst->getDef().count(x)) {
-                        RVReg tmp(_func->regcnt++);
-                        blk->insts.insert(it, std::make_shared<RVLd>(tmp, RVReg_sp(), nodeStackOffset[x], tmp.size));
-                        inst->replaceUse(x, tmp.id);
-                        newTemps.insert(tmp.id);
-                    }
-                    if (inst->getDef().count(x)) {
-                        RVReg tmp(_func->regcnt++);
-                        blk->insts.insert(it + 1, std::make_shared<RVSt>(tmp, RVReg_sp(), nodeStackOffset[x], tmp.size));
-                        inst->replaceDef(x, tmp.id);
-                        newTemps.insert(tmp.id);
-                    }
+                    RVReg tmp(_func->regcnt++);
+                    blk->insts.insert(it, std::make_shared<RVLd>(tmp, RVReg_sp(), RVImm(nodeStackOffset[x], Rop::Imm, true,false), tmp.size));
+                    inst->replaceUse(x, tmp.id);
+                    newTemps.insert(tmp.id);
                 }
-            }
+            for (auto x : inst->getDef())
+                if (spilledNodes.count(x)) {
+                    RVReg tmp(_func->regcnt++);
+                    blk->insts.insert(++it, std::make_shared<RVSt>(tmp, RVReg_sp(), RVImm(nodeStackOffset[x], Rop::Imm, true, false), tmp.size));
+                    it--;
+                    inst->replaceDef(x, tmp.id);
+                    newTemps.insert(tmp.id);
+                }
         }
     }
     for (auto x : newTemps)

@@ -1,4 +1,11 @@
+int qpow(int p) {
+
+    p=p / 2;
+    return p;
+}
+
+
 int main() {
-    printInt(4);
+    println(toString(qpow(10)));
     return 0;
 }

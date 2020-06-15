@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include <set>
+#include <list>
 
 #include "RegInfo.h"
 
@@ -54,7 +55,7 @@ class RVBlock {
 public:
     std::string funcName;
     int label;
-    std::vector<std::shared_ptr<RVInst>> insts;
+    std::list<std::shared_ptr<RVInst>> insts;
     std::vector<std::shared_ptr<RVBlock>> pre, succ;
     std::set<int> liveIn, liveOut;
     std::string to_string();
@@ -122,6 +123,18 @@ public:
     void replaceDef(int a, int b) override;
     void replaceColor(int a, int b) override;
     RVLd(RVReg _rd, RVReg _addr, RVImm _offset, int _width);
+};
+
+class RVLa : public RVInst {
+public:
+    RVReg rd, rs;
+    std::string to_string() override;
+    std::set<int> getUse() override;
+    std::set<int> getDef() override;
+    void replaceUse(int a, int b) override;
+    void replaceDef(int a, int b) override;
+    void replaceColor(int a, int b) override;
+    RVLa(RVReg _rd, RVReg _rs);
 };
 
 class RVLi : public RVInst {

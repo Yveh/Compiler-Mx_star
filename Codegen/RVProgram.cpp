@@ -39,7 +39,7 @@ void RVProgram::outputIR(std::ostream &ofs) {
     for (int i = 0; i < constString.size(); ++i) {
         ofs << "\t.type\t" << ".str." << i << " ,@object" << std::endl;
         ofs << "\t.section\t.rodata" << std::endl;
-        ofs << ".str." << i << " :" << std::endl;
+        ofs << ".str." << i << ":" << std::endl;
         ofs << "\t.asciz\t\"" << constString[i] + "\"" << std::endl;
         ofs << "\t.size\t" << ".str." << i << ", " << constString.size() + 1 << std::endl << std::endl;
     }

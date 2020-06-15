@@ -9,8 +9,8 @@ RVReg InstSelector::RegTrans(IROperand operand) {
         return RVSReg(operand.id, 4);
     }
     else if (operand.type == IROperand::Imm8) {
-        RVReg reg(newLabel(), 1);
         if (operand.id) {
+            RVReg reg(newLabel(), 1);
             _block->insts.push_back(std::make_shared<RVLi>(reg, RVImm(operand.id)));
             return reg;
         }
@@ -19,8 +19,8 @@ RVReg InstSelector::RegTrans(IROperand operand) {
         }
     }
     else if (operand.type == IROperand::Imm32) {
-        RVReg reg(newLabel(), 4);
         if (operand.id) {
+            RVReg reg(newLabel(), 4);
             _block->insts.push_back(std::make_shared<RVLi>(reg, RVImm(operand.id)));
             return reg;
         }
@@ -120,11 +120,32 @@ void InstSelector::runForBlock(std::shared_ptr<IRBlock> blk) {
         else if (std::dynamic_pointer_cast<IRCall>(_inst)) {
             auto inst = std::dynamic_pointer_cast<IRCall>(_inst);
             for (int i = 0; i < std::min(8, int(inst->paras.size())); ++i) {
-                _block->insts.push_back(std::make_shared<RVMv>(RVReg_a(i), RegTrans(inst->paras[i])));
+                RVReg addr = RegTrans(inst->paras[i]);
+                if (addr.is_constString) {
+                    _block->insts.push_back(std::make_shared<RVLa>(RVReg_a(i), addr));
+                }
+                else if (addr.is_global) {
+                    RVReg dst = RegTrans(inst->dst);
+                    RVReg ptr(newLabel(), 4);
+                    _block->insts.push_back(std::make_shared<RVLui>(ptr, RVImm(addr.id, Rop::Hi)));
+                    _block->insts.push_back(std::make_shared<RVLd>(RVReg_a(i), ptr, RVImm(addr.id, Rop::Lo), inst->dst.size()));
+                }
+                else {
+                    _block->insts.push_back(std::make_shared<RVMv>(RVReg_a(i), addr));
+                }
             }
             int offset = 0;
             for (int i = 8; i < inst->paras.size(); ++i) {
-                _block->insts.push_back(std::make_shared<RVSt>(RegTrans(inst->paras[i]), RVReg_sp(), RVImm(offset), inst->paras[i].size()));
+                RVReg addr = RegTrans(inst->paras[i]);
+                if (addr.is_global) {
+                    RVReg value = RegTrans(inst->paras[i]);
+                    RVReg ptr(newLabel(), 4);
+                    _block->insts.push_back(std::make_shared<RVLui>(ptr, RVImm(addr.id, Rop::Hi)));
+                    _block->insts.push_back(std::make_shared<RVSt>(value, ptr, RVImm(addr.id, Rop::Lo), inst->paras[i].size()));
+                }
+                else {
+                    _block->insts.push_back(std::make_shared<RVSt>(RegTrans(inst->paras[i]), RVReg_sp(), RVImm(offset), inst->paras[i].size()));
+                }
                 offset += 4;
             }
             _func->paramInStackOffset = std::max(_func->paramInStackOffset, offset);
@@ -299,7 +320,7 @@ void InstSelector::makeCmp(IROperand src1, IROperand src2, IRBinary::op_t op, RV
             } else {
                 _block->insts.push_back(std::make_shared<RVRtype>(tmp, RegTrans(src2), RegTrans(src1), Sop::Slt));
             }
-            makeBinary(src1, IROperandImm8(1), Sop::Xor, dst);
+            _block->insts.push_back(std::make_shared<RVItype>(dst, tmp, RVImm(1), Sop::Xor));
             break;
         }
         case IRBinary::Sgt: {
@@ -317,7 +338,7 @@ void InstSelector::makeCmp(IROperand src1, IROperand src2, IRBinary::op_t op, RV
             } else {
                 _block->insts.push_back(std::make_shared<RVRtype>(tmp, RegTrans(src1), RegTrans(src2), Sop::Slt));
             }
-            makeBinary(src1, IROperandImm8(1), Sop::Xor, dst);
+            _block->insts.push_back(std::make_shared<RVItype>(dst, tmp, RVImm(1), Sop::Xor));
             break;
         }
     }

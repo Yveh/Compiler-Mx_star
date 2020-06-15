@@ -42,7 +42,7 @@ int string_ord(char *s, int i) {
     return *(s + i);
 }
 
-int array_size(int *i) {
+int _size(int *i) {
     return *(i - 1);
 }
 

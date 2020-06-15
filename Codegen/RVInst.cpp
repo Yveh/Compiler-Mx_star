@@ -20,6 +20,8 @@ RVReg::RVReg(int _id, int _size, bool _is_global, bool _is_constString, bool _is
 std::string RVReg::to_string() {
     if (is_special)
         return regNames[id];
+    else if (is_constString)
+        return ".str." + std::to_string(id);
     else if (is_global)
         return "g" + std::to_string(id);
     else
@@ -465,3 +467,36 @@ void RVRet::replaceUse(int a, int b) {}
 void RVRet::replaceDef(int a, int b) {}
 
 void RVRet::replaceColor(int a, int b) {}
+
+RVLa::RVLa(RVReg _rd, RVReg _rs) : rd(_rd), rs(_rs) {}
+
+std::string RVLa::to_string() {
+    return "la " + rd.to_string() + ", " + rs.to_string();
+}
+std::set<int> RVLa::getUse() {
+    return std::set<int>{rs.is_special ? -rs.id : rs.id};
+}
+
+std::set<int> RVLa::getDef() {
+    return std::set<int>{rd.is_special ? -rd.id : rd.id};
+}
+
+void RVLa::replaceUse(int a, int b) {
+    if (!rs.is_special && rs.id == a)
+        rs.id = b;
+}
+
+void RVLa::replaceDef(int a, int b) {
+    if (!rd.is_special && rd.id == a)
+        rd.id = b;
+}
+void RVLa::replaceColor(int a, int b) {
+    if (!rd.is_special && rd.id == a) {
+        rd.id = b;
+        rd.is_special = 1;
+    }
+    if (!rs.is_special && rs.id == a) {
+        rs.id = b;
+        rs.is_special = 1;
+    }
+}

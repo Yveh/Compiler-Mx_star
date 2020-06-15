@@ -423,7 +423,7 @@ void TypeChecker::visit(std::shared_ptr<ASTExprFuncCall> node) {
 void TypeChecker::visit(std::shared_ptr<ASTExprMemberAccess> node) {
     auto obj = std::dynamic_pointer_cast<ASTExpr>(node->object);
     visit(obj);
-    if (!obj->exprType.isClass() && obj->exprType.dim == 0)
+    if (!obj->exprType.isClass() && !(obj->exprType.name == "string") && obj->exprType.dim == 0)
         issue->issue(node->pos, "requires a object for member access");
     else {
         if (node->memberFunc) {
