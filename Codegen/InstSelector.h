@@ -13,6 +13,7 @@ public:
     std::shared_ptr<RVProgram> RVprog;
 
     std::shared_ptr<RVBlock> _block;
+    std::shared_ptr<RVFunction> _func;
 
     std::map<int, RVReg> calleeRegs;
 

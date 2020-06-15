@@ -49,7 +49,10 @@ void InstSelector::runForBlock(std::shared_ptr<IRBlock> blk) {
     _block = RVprog->ref_block[blk];
     for (auto _inst : blk->insts) {
         if (std::dynamic_pointer_cast<IRMalloc>(_inst)) {
-
+            auto inst = std::dynamic_pointer_cast<IRMalloc>(_inst);
+            _block->insts.push_back(std::make_shared<RVMv>(RVReg_a(0), RegTrans(inst->size)));
+            _block->insts.push_back(std::make_shared<RVCall>(RVprog->builtin_functions[0]));
+            _block->insts.push_back(std::make_shared<RVMv>(RegTrans(inst->dst), RVReg_a(0)));
         }
         else if (std::dynamic_pointer_cast<IRMove>(_inst)) {
             auto inst = std::dynamic_pointer_cast<IRMove>(_inst);
@@ -124,7 +127,7 @@ void InstSelector::runForBlock(std::shared_ptr<IRBlock> blk) {
                 _block->insts.push_back(std::make_shared<RVSt>(RegTrans(inst->paras[i]), RVReg_sp(), RVImm(offset), inst->paras[i].size()));
                 offset += 4;
             }
-            //TODO:curfunc sp offset
+            _func->paramInStackOffset = std::max(_func->paramInStackOffset, offset);
             _block->insts.push_back(std::make_shared<RVCall>(RVprog->ref_function[inst->func]));
             if (!inst->dst.is_void()) {
                 _block->insts.push_back(std::make_shared<RVMv>(RegTrans(inst->dst), RVReg_a(0)));
@@ -181,10 +184,12 @@ void InstSelector::runForBlock(std::shared_ptr<IRBlock> blk) {
 
 void InstSelector::runForFunction(std::shared_ptr<IRFunction> func) {
     auto rFunc = RVprog->ref_function[func];
+    _func = rFunc;
     id_n = 1;
     RVprog->ref_reg.clear();
     _block = RVprog->ref_block[func->inBlock];
 
+    _block->insts.push_back(std::make_shared<RVItype>(RVReg_sp(), RVReg_sp(), RVImm(0, Rop::Imm, true), Sop::Add));
     calleeRegs.clear();
     for (auto id : calleeSavedRegNames) {
         RVReg tmp(newLabel());
@@ -205,7 +210,7 @@ void InstSelector::runForFunction(std::shared_ptr<IRFunction> func) {
     for (int i = 8; i < func->paras.size(); ++i) {
         RVReg reg = RVReg(newLabel(), func->paras[i].size());
         RVprog->ref_reg[func->paras[i].id] = reg;
-        _block->insts.push_back(std::make_shared<RVLd>(reg, RVReg_sp(), RVImm(offset), func->paras[i].size()));
+        _block->insts.push_back(std::make_shared<RVLd>(reg, RVReg_sp(), RVImm(offset, Rop::Imm, true, false), func->paras[i].size()));
         offset += 4;
     }
     for (auto blk : func->blocks)
@@ -217,7 +222,8 @@ void InstSelector::runForFunction(std::shared_ptr<IRFunction> func) {
         _block->insts.push_back(std::make_shared<RVMv>(RVPReg(id), tmp));
         calleeRegs[id] = tmp;
     }
-    _block->insts.push_back(std::make_shared<RVMv>(RVReg_sp(), Vra));
+    _block->insts.push_back(std::make_shared<RVMv>(RVReg_ra(), Vra));
+    _block->insts.push_back(std::make_shared<RVItype>(RVReg_sp(), RVReg_sp(), RVImm(0, Rop::Imm, true,false), Sop::Add));
     _block->insts.push_back(std::make_shared<RVRet>());
     rFunc->regcnt = id_n;
 }

@@ -27,6 +27,7 @@ RVReg RVGReg(int _id, int _size);
 RVReg RVSReg(int _id, int _size);
 RVReg RVPReg(int _id);
 RVReg RVReg_zero();
+RVReg RVReg_ra();
 RVReg RVReg_a(int _id);
 RVReg RVReg_sp();
 
@@ -34,8 +35,9 @@ class RVImm {
 public:
     Rop op;
     int id;
+    bool is_stack, is_neg;
     std::string to_string();
-    RVImm(int _id = 0, Rop _op = Rop::Imm);
+    RVImm(int _id = 0, Rop _op = Rop::Imm, bool is_stack = false, bool _is_neg = true);
 };
 
 class RVInst {
@@ -60,7 +62,7 @@ public:
 
 class RVFunction {
 public:
-    int regcnt;
+    int regcnt, paramInStackOffset;
     std::string name;
     std::vector<RVReg> paras;
     std::vector<std::shared_ptr<RVBlock>> blocks;

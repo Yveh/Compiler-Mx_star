@@ -1,6 +1,9 @@
 #include "RVInst.h"
 
-RVFunction::RVFunction(std::string _name) : name(_name) {}
+RVFunction::RVFunction(std::string _name) : name(_name) {
+    regcnt = 0;
+    paramInStackOffset = 0;
+}
 
 std::string RVFunction::to_string() {
     return name;
@@ -27,10 +30,11 @@ RVReg RVGReg(int _id, int _size) {return RVReg(_id, _size, 1, 0);}
 RVReg RVSReg(int _id, int _size) {return RVReg(_id, _size, 1, 1);}
 RVReg RVPReg(int _id) {return RVReg(_id, 0, 0, 0, 1);}
 RVReg RVReg_zero() {return RVReg(0, 0, 0, 0, 1);}
+RVReg RVReg_ra() {return RVReg(1, 0, 0, 0, 1);};
 RVReg RVReg_a(int _id) {return RVReg(10 + _id, 0, 0, 0, 1);}
 RVReg RVReg_sp() {return RVReg(2, 0, 0, 0, 1);}
 
-RVImm::RVImm(int _id, Rop _op) : id(_id), op(_op) {}
+RVImm::RVImm(int _id, Rop _op, bool _is_stack, bool _is_neg) : id(_id), op(_op), is_stack(_is_stack), is_neg(_is_neg) {}
 
 std::string RVImm::to_string() {
     if (op == Imm)
@@ -75,6 +79,7 @@ std::string RVBr::to_string() {
         case Bop::Lt : ret += "lt"; break;
     }
     ret += " " + rs1.to_string() + ", " + rs2.to_string() + ", " + offset->to_string();
+    return ret;
 }
 
 std::set<int> RVBr::getUse() {
@@ -333,6 +338,7 @@ std::string RVItype::to_string() {
         case Sop::Slt: ret = "slti "; break;
     }
     ret += rd.to_string() + ", " + rs.to_string() + ", " + imm.to_string();
+    return ret;
 }
 
 std::set<int> RVItype::getUse() {
@@ -380,6 +386,7 @@ std::string RVRtype::to_string() {
         case Sop::Slt: ret = "slt "; break;
     }
     ret += rd.to_string() + ", " + rs1.to_string() + ", " + rs2.to_string();
+    return ret;
 }
 
 std::set<int> RVRtype::getUse() {
@@ -422,11 +429,15 @@ std::string RVCall::to_string() {
 }
 
 std::set<int> RVCall::getUse() {
-    return std::set<int>();
+    std::set<int> ret;
+    for (int i = 0; i < std::min(8, int(func->paras.size())); ++i) {
+        ret.insert(-10 - i);
+    }
+    return ret;
 }
 
 std::set<int> RVCall::getDef() {
-    return std::set<int>();
+    return std::set<int>{-1, -5, -6, -7, -10, -11, -12, -13, -14, -15, -16, -17, -28, -29, -30, -31};
 }
 
 void RVCall::replaceUse(int a, int b) {}
@@ -442,7 +453,7 @@ std::string RVRet::to_string() {
 }
 
 std::set<int> RVRet::getUse() {
-    return std::set<int>();
+    return std::set<int>{-1};
 }
 
 std::set<int> RVRet::getDef() {

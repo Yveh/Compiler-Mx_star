@@ -48,7 +48,14 @@ IROperand IRBuilder::loadOperand(IROperand x) {
 }
 
 void IRBuilder::createIR(std::shared_ptr<ASTRoot> node) {
-    auto func = std::make_shared<IRFunction>("getInt");
+    auto func = std::make_shared<IRFunction>("malloc");
+    func->isBuiltin = true;
+    func->retType = IROperandReg32();
+    func->paras.push_back(IROperandReg32());
+    prog->func.push_back(func);
+    prog->ref_func[func->name] = prog->func.size() - 1;
+
+    func = std::make_shared<IRFunction>("getInt");
     func->isBuiltin = true;
     func->retType = IROperandReg32();
     prog->func.push_back(func);

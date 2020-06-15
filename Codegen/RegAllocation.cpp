@@ -8,6 +8,27 @@ void RegAllocation::run() {
         alias.clear();
         nodeStackOffset.clear();
         runForFunction();
+        stackOffset += func->paramInStackOffset;
+        stackOffset = (stackOffset + 15) / 16 * 16;
+        for (auto blk : func->blocks) {
+            for (auto _inst : blk->insts) {
+                if (std::dynamic_pointer_cast<RVLd>(_inst)) {
+                    auto inst = std::dynamic_pointer_cast<RVLd>(_inst);
+                    if (inst->offset.is_stack)
+                        inst->offset.id += (inst->offset.is_neg ? -1 : 1) * stackOffset;
+                }
+                else if (std::dynamic_pointer_cast<RVSt>(_inst)) {
+                    auto inst = std::dynamic_pointer_cast<RVSt>(_inst);
+                    if (inst->offset.is_stack)
+                        inst->offset.id += (inst->offset.is_neg ? -1 : 1) * stackOffset;
+                }
+                else if (std::dynamic_pointer_cast<RVItype>(_inst)) {
+                    auto inst = std::dynamic_pointer_cast<RVItype>(_inst);
+                    if (inst->imm.is_stack)
+                        inst->imm.id += (inst->imm.is_neg ? -1 : 1) * stackOffset;
+                }
+            }
+        }
         for (auto pp : nodeColor)
             for (auto blk : func->blocks) {
                 for (auto inst : blk->insts) {
