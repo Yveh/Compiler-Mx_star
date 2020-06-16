@@ -91,15 +91,15 @@ int main(int argc, char *argv[]){
     RVbuilder->run();
 //    RVProg->outputIR(std::cout);
 
-    const std::string RVFilePath("../RV.s");
-    std::ofstream ofsRV(RVFilePath);
-    RVProg->outputIR(ofsRV);
+//    const std::string RVFilePath("../RV.s");
+//    std::ofstream ofsRV(RVFilePath);
+//    RVProg->outputIR(ofsRV);
 
     std::shared_ptr<RegAllocation> RegAllocator = std::make_shared<RegAllocation>(RVProg);
     RegAllocator->run();
-    RVProg->outputIR(std::cout);
+//    RVProg->outputIR(std::cout);
 
-    const std::string FinalFilePath = std::string("../test.s");
+    const std::string FinalFilePath = std::string("./output.s");
     std::ofstream ofsFinal(FinalFilePath);
     RVProg->outputIR(ofsFinal);
 
