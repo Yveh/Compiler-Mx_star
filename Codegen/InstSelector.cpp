@@ -60,7 +60,11 @@ void InstSelector::runForBlock(std::shared_ptr<IRBlock> blk) {
                 _block->insts.push_back(std::make_shared<RVLi>(RegTrans(inst->dst), RVImm(inst->src.id)));
             }
             else {
-                _block->insts.push_back(std::make_shared<RVMv>(RegTrans(inst->dst), RegTrans(inst->src)));
+                RVReg addr = RegTrans(inst->src);
+                if (addr.is_constString)
+                    _block->insts.push_back(std::make_shared<RVLa>(RegTrans(inst->dst), addr));
+                else
+                    _block->insts.push_back(std::make_shared<RVMv>(RegTrans(inst->dst), addr));
             }
         }
         else if (std::dynamic_pointer_cast<IRBinary>(_inst)) {

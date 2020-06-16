@@ -31,8 +31,8 @@ int main(int argc, char *argv[]){
     }
 
 
-//    const std::string filepath("../local-judge/testcase/codegen/t19.mx");
-////    const std::string filepath("../test.mx");
+//    const std::string filepath("../local-judge/testcase/codegen/t61.mx");
+//    const std::string filepath("../test.mx");
 //    std::ifstream ifs;
 //    ifs.open(filepath);
 //    if (!ifs.good()) {
