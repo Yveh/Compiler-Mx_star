@@ -1,6 +1,6 @@
 #include <iostream>
 #include <DominatorTree.h>
-#include <SSADestructor.h>
+#include <cstring>
 
 #include "antlr4-runtime.h"
 #include "Mx_starLexer.h"
@@ -14,6 +14,7 @@
 #include "RVProgram.h"
 #include "InstSelector.h"
 #include "SSAConstructor.h"
+#include "SSADestructor.h"
 #include "RegAllocation.h"
 
 int main(int argc, char *argv[]){
@@ -29,7 +30,7 @@ int main(int argc, char *argv[]){
         }
     }
 
-    /* If Debug */
+
 //    const std::string filepath("../local-judge/testcase/codegen/t19.mx");
 ////    const std::string filepath("../test.mx");
 //    std::ifstream ifs;
@@ -38,10 +39,14 @@ int main(int argc, char *argv[]){
 //        std::cerr << "bad" << std::endl;
 //    }
 //    antlr4::ANTLRInputStream input(ifs);
-    /* If OnlineJudge */
+
+
+
+
     antlr4::ANTLRInputStream input(std::cin);
 
-    /* ************** */
+
+
     Mx_starLexer lexer(&input);
     antlr4::CommonTokenStream tokens(&lexer);
     tokens.fill();
