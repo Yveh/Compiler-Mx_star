@@ -331,7 +331,7 @@ void InstSelector::makeCmp(IROperand src1, IROperand src2, IRBinary::op_t op, RV
             break;
         }
         case IRBinary::Slt: {
-            if (src2.is_imm()) {
+            if (src2.is_imm() && checkImm(src2.id)) {
                 _block->insts.push_back(std::make_shared<RVItype>(dst, RegTrans(src1), RVImm(src2.id), Sop::Slt));
             } else {
                 _block->insts.push_back(std::make_shared<RVRtype>(dst, RegTrans(src1), RegTrans(src2), Sop::Slt));
@@ -340,7 +340,7 @@ void InstSelector::makeCmp(IROperand src1, IROperand src2, IRBinary::op_t op, RV
         }
         case IRBinary::Sle: {
             RVReg tmp(newLabel());
-            if (src1.is_imm()) {
+            if (src1.is_imm() && checkImm(src1.id)) {
                 _block->insts.push_back(std::make_shared<RVItype>(tmp, RegTrans(src2), RVImm(src1.id), Sop::Slt));
             } else {
                 _block->insts.push_back(std::make_shared<RVRtype>(tmp, RegTrans(src2), RegTrans(src1), Sop::Slt));
@@ -349,7 +349,7 @@ void InstSelector::makeCmp(IROperand src1, IROperand src2, IRBinary::op_t op, RV
             break;
         }
         case IRBinary::Sgt: {
-            if (src1.is_imm()) {
+            if (src1.is_imm() && checkImm(src1.id)) {
                 _block->insts.push_back(std::make_shared<RVItype>(dst, RegTrans(src2), RVImm(src1.id), Sop::Slt));
             } else {
                 _block->insts.push_back(std::make_shared<RVRtype>(dst, RegTrans(src2), RegTrans(src1), Sop::Slt));
@@ -358,7 +358,7 @@ void InstSelector::makeCmp(IROperand src1, IROperand src2, IRBinary::op_t op, RV
         }
         case IRBinary::Sge: {
             RVReg tmp(newLabel());
-            if (src2.is_imm()) {
+            if (src2.is_imm() && checkImm(src2.id)) {
                 _block->insts.push_back(std::make_shared<RVItype>(tmp, RegTrans(src1), RVImm(src2.id), Sop::Slt));
             } else {
                 _block->insts.push_back(std::make_shared<RVRtype>(tmp, RegTrans(src1), RegTrans(src2), Sop::Slt));
@@ -373,20 +373,24 @@ void InstSelector::makeBinary(IROperand src1, IROperand src2, Sop op, RVReg dst)
     if (op == Mul || op == Div || op == Rem)
         _block->insts.push_back(std::make_shared<RVRtype>(dst, RegTrans(src1), RegTrans(src2), op));
     else if (op == Sub) {
-        if (src2.is_imm()) {
+        if (src2.is_imm() && checkImm(src2.id)) {
             _block->insts.push_back(std::make_shared<RVItype>(dst, RegTrans(src1), RVImm(-src2.id), Sop::Add));
         }
         else {
             _block->insts.push_back(std::make_shared<RVRtype>(dst, RegTrans(src1), RegTrans(src2), op));
         }
     }
-    else if (src1.is_imm()) {
+    else if (src1.is_imm() && checkImm(src1.id)) {
         _block->insts.push_back(std::make_shared<RVItype>(dst, RegTrans(src2), RVImm(src1.id), op));
     }
-    else if (src2.is_imm()) {
+    else if (src2.is_imm() && checkImm(src2.id)) {
         _block->insts.push_back(std::make_shared<RVItype>(dst, RegTrans(src1), RVImm(src2.id), op));
     }
     else {
         _block->insts.push_back(std::make_shared<RVRtype>(dst, RegTrans(src1), RegTrans(src2), op));
     }
+}
+
+bool InstSelector::checkImm(int x) {
+    return -(1 << 11) <= x && x <= (1 << 11) - 1;
 }

@@ -1,0 +1,16 @@
+class Vec {
+    int a;
+    int A() {
+        return this;
+    }
+    int B() {
+        return A();
+    }
+};
+
+int main() {
+    Vec V = new Vec;
+    V.a = 1;
+    printlnInt(V.B());
+    return 0;
+}

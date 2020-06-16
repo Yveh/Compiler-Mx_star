@@ -756,13 +756,27 @@ void IRBuilder::visit(std::shared_ptr<ASTExprSubscript> node) {
 }
 
 void IRBuilder::visit(std::shared_ptr<ASTExprFuncCall> node) {
+    bool flag = false;
+    std::shared_ptr<IRFunction> func;
+    if (_inClass) {
+        if (prog->hasFunc(_objPointer->name + "_" + node->name)) {
+            func = prog->getFunc(_objPointer->name + "_" + node->name);
+            flag = true;
+        }
+        else
+            func = prog->getFunc(node->name);
+    }
+    else
+        func = prog->getFunc(node->name);
+
     std::vector<IROperand> paras;
+    if (flag)
+        paras.push_back(_obj);
     for (auto child : node->paras) {
         visit(std::dynamic_pointer_cast<ASTExpr>(child));
         _opr = loadOperand(_opr);
         paras.push_back(_opr);
     }
-    std::shared_ptr<IRFunction> func = prog->getFunc(node->name);
     if (func->retType.type == IROperand::Void) {
         _block->insts.push_back(std::make_shared<IRCall>(func, paras));
     }

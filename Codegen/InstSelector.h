@@ -20,6 +20,7 @@ public:
     int id_n;
     int newLabel();
     RVReg RegTrans(IROperand operand);
+    bool checkImm(int x);
     void makeCmp(IROperand src1, IROperand src2, IRBinary::op_t op, RVReg dst);
     void makeBinary(IROperand src1, IROperand src2, Sop op, RVReg dst);
     InstSelector(std::shared_ptr<IRProgram> _old, std::shared_ptr<RVProgram> _new);
