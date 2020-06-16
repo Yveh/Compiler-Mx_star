@@ -38,6 +38,8 @@ IROperand::IROperand(IROperand::type_t _type, int _id, bool _pointer) : type(_ty
 int IROperand::size() const {
     if (type == Void)
         return 0;
+//    else if (pointer)
+//        return 4;
     else if (type == Reg32 || type == Imm32)
         return 4;
     else if (type == Reg8 || type == Imm8)
@@ -184,7 +186,9 @@ void IRFunction::getAllBlocks(std::shared_ptr<IRBlock> cur) {
 IRBlock::IRBlock(int _label) : label(_label) {}
 
 
-IRClass::IRClass(std::string _name) : name(_name) {}
+IRClass::IRClass(std::string _name) : name(_name) {
+    size = 0;
+}
 
 int IRClass::getOffset(std::string name) {
     return offset[ref[name]];

@@ -474,17 +474,14 @@ std::string RVLa::to_string() {
     return "la " + rd.to_string() + ", " + rs.to_string();
 }
 std::set<int> RVLa::getUse() {
-    return std::set<int>{rs.is_special ? -rs.id : rs.id};
+    return std::set<int>();
 }
 
 std::set<int> RVLa::getDef() {
     return std::set<int>{rd.is_special ? -rd.id : rd.id};
 }
 
-void RVLa::replaceUse(int a, int b) {
-    if (!rs.is_special && rs.id == a)
-        rs.id = b;
-}
+void RVLa::replaceUse(int a, int b) {}
 
 void RVLa::replaceDef(int a, int b) {
     if (!rd.is_special && rd.id == a)
@@ -494,9 +491,5 @@ void RVLa::replaceColor(int a, int b) {
     if (!rd.is_special && rd.id == a) {
         rd.id = b;
         rd.is_special = 1;
-    }
-    if (!rs.is_special && rs.id == a) {
-        rs.id = b;
-        rs.is_special = 1;
     }
 }

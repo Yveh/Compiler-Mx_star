@@ -1,11 +1,7 @@
-int qpow(int p) {
-
-    p=p / 2;
-    return p;
-}
-
-
 int main() {
-    println(toString(qpow(10)));
+    int[] a = new int[10];
+    int i;
+    for (i = 0; i < 10; i++)
+        printlnInt(a[i]);
     return 0;
 }

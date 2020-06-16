@@ -71,7 +71,7 @@ void RegAllocation::runForFunction() {
     assignColors();
     if (!spilledNodes.empty()) {
         rewriteProgram();
-        prog->outputIR(std::cout);
+//        prog->outputIR(std::cout);
         runForFunction();
     }
 }

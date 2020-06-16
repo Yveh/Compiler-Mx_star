@@ -9,8 +9,6 @@ IROperand::type_t IRBuilder::RegFromMx(type_t type) {
         return IROperand::Reg8;
     else if (type.kind == type_t::ty_int)
         return IROperand::Reg32;
-    else if (type.name == "string")
-        return IROperand::Reg8;
     else if (type.kind == type_t::ty_class)
         return IROperand::Reg32;
     else
@@ -24,8 +22,6 @@ IROperand::type_t IRBuilder::ImmFromMx(type_t type) {
         return IROperand::Imm8;
     else if (type.kind == type_t::ty_int)
         return IROperand::Imm32;
-    else if (type.name == "string")
-        return IROperand::Imm8;
     else if (type.kind == type_t::ty_class)
         return IROperand::Imm32;
     else
@@ -196,7 +192,10 @@ void IRBuilder::visit(std::shared_ptr<ASTRoot> node) {
             auto para = std::dynamic_pointer_cast<ASTVarDecl>(pchild);
             IROperand tmp(RegFromMx(para->varType), prog->newLabel());
             prog->func.back()->paras.push_back(tmp);
-            prog->ref_var[para->id[0]] = tmp;
+            IROperand tmp2(RegFromMx(para->varType), prog->newLabel(), 1);
+            prog->func.back()->inBlock->insts.push_back(std::make_shared<IRAlloca>(tmp2));
+            prog->func.back()->inBlock->insts.push_back(std::make_shared<IRStore>(tmp2, tmp));
+            prog->ref_var[para->id[0]] = tmp2;
         }
         prog->ref_func[func->name] = prog->func.size() - 1;
     }
@@ -218,12 +217,16 @@ void IRBuilder::visit(std::shared_ptr<ASTRoot> node) {
             prog->func.back()->retType = IROperand(RegFromMx(func->retType));
             prog->func.back()->inBlock = std::make_shared<IRBlock>(prog->newLabel());
             prog->func.back()->outBlock = std::make_shared<IRBlock>(prog->newLabel());
-            prog->func.back()->paras.push_back(IROperandReg32(prog->newLabel()));
+            IROperand tmp = IROperandReg32(prog->newLabel());
+            prog->func.back()->paras.push_back(tmp);
             for (auto pchild : func->paras) {
                 auto para = std::dynamic_pointer_cast<ASTVarDecl>(pchild);
                 IROperand tmp(RegFromMx(para->varType), prog->newLabel());
                 prog->func.back()->paras.push_back(tmp);
-                prog->ref_var[para->id[0]] = tmp;
+                IROperand tmp2(RegFromMx(para->varType), prog->newLabel(), 1);
+                prog->func.back()->inBlock->insts.push_back(std::make_shared<IRAlloca>(tmp2));
+                prog->func.back()->inBlock->insts.push_back(std::make_shared<IRStore>(tmp2, tmp));
+                prog->ref_var[para->id[0]] = tmp2;
             }
             prog->ref_func[obj->name + "_" + func->name] = prog->func.size() - 1;
         }
@@ -234,7 +237,7 @@ void IRBuilder::visit(std::shared_ptr<ASTRoot> node) {
     for (auto child : node->varList) {
         auto var = std::dynamic_pointer_cast<ASTVarDecl>(child);
         for (int idx = 0; idx < var->id.size(); ++idx) {
-            IROperand tmp = IROperand(RegFromMx(var->varType), prog->newLabel(), 1);
+            IROperand tmp = IROperandReg32(prog->newLabel(), 1);
             prog->globalVar.push_back(tmp);
             if (var->initValue[idx]) {
                 visit(std::dynamic_pointer_cast<ASTExpr>(var->initValue[idx]));
@@ -298,20 +301,31 @@ void IRBuilder::visit(std::shared_ptr<ASTStmtFor> node) {
     auto _body = std::make_shared<IRBlock>(prog->newLabel());
     auto _incr = std::make_shared<IRBlock>(prog->newLabel());
     auto _next = std::make_shared<IRBlock>(prog->newLabel());
-    visit(std::dynamic_pointer_cast<ASTExpr>(node->init));
+    if (node->init) {
+        visit(std::dynamic_pointer_cast<ASTExpr>(node->init));
+    }
     _block->insts.push_back(std::make_shared<IRJump>(_cond));
     _block = _cond;
-    visit(std::dynamic_pointer_cast<ASTExpr>(node->cond));
-    _opr = loadOperand(_opr);
-    _block->insts.push_back(std::make_shared<IRBr>(_opr, _body, _next));
+    if (node->cond) {
+        visit(std::dynamic_pointer_cast<ASTExpr>(node->cond));
+        _opr = loadOperand(_opr);
+        _block->insts.push_back(std::make_shared<IRBr>(_opr, _body, _next));
+    }
+    else {
+        _block->insts.push_back(std::make_shared<IRJump>(_body));
+    }
     continueTo.push(_incr);
     breakTo.push(_next);
     _block = _body;
-    visit(std::dynamic_pointer_cast<ASTStmt>(node->stmt));
+    if (node->stmt) {
+        visit(std::dynamic_pointer_cast<ASTStmt>(node->stmt));
+    }
     if (!hasReturn && !hasContinue && !hasBreak)
         _block->insts.push_back(std::make_shared<IRJump>(_incr));
     _block = _incr;
-    visit(std::dynamic_pointer_cast<ASTExpr>(node->incr));
+    if (node->incr) {
+        visit(std::dynamic_pointer_cast<ASTExpr>(node->incr));
+    }
     _block->insts.push_back(std::make_shared<IRJump>(_cond));
     continueTo.pop();
     breakTo.pop();
@@ -331,7 +345,9 @@ void IRBuilder::visit(std::shared_ptr<ASTStmtWhile> node) {
     _opr = loadOperand(_opr);
     _block->insts.emplace_back(std::make_shared<IRBr>(_opr, _body, _next));
     _block = _body;
-    visit(std::dynamic_pointer_cast<ASTStmt>(node->stmt));
+    if (node->stmt) {
+        visit(std::dynamic_pointer_cast<ASTStmt>(node->stmt));
+    }
     if (!hasReturn && !hasContinue && !hasBreak)
         _block->insts.push_back(std::make_shared<IRJump>(_cond));
     continueTo.pop();
@@ -397,10 +413,15 @@ void IRBuilder::visit(std::shared_ptr<ASTBlock> node) {
 }
 
 void IRBuilder::visit(std::shared_ptr<ASTFuncDecl> node) {
-    if (_inClass)
-        _block = prog->getFunc(_objPointer->name + "_" + node->name)->inBlock;
-    else if (node->name != "main")
-        _block = prog->getFunc(node->name)->inBlock;
+    std::shared_ptr<IRFunction> func;
+    if (_inClass) {
+        func = prog->getFunc(_objPointer->name + "_" + node->name);
+        _obj = func->paras[0];
+    }
+    else
+        func = prog->getFunc(node->name);
+    if (node->name != "main")
+        _block = func->inBlock;
     hasReturn = hasBreak = hasContinue = false;
     retValues.clear();
     retBlocks.clear();
@@ -410,7 +431,6 @@ void IRBuilder::visit(std::shared_ptr<ASTFuncDecl> node) {
         retBlocks.push_back(_block);
         retValues.push_back(IROperand(ImmFromMx(node->retType), 0));
     }
-    auto func = prog->getFunc(node->name);
     for (int i = 0; i < retBlocks.size(); ++i)
         retBlocks[i]->insts.push_back(std::make_shared<IRJump>(func->outBlock));
     if (func->retType.is_void()) {
@@ -445,26 +465,23 @@ void IRBuilder::visit(std::shared_ptr<ASTExpr> node) {
 
 
 void IRBuilder::createArray(std::shared_ptr<ASTExprNew> node, int deep) {
-    if (node->paras.size() == deep) {
+    if (deep == node->paras.size()) {
         _opr = IROperandReg32(prog->newLabel());
-        if (node->exprType.isClass()) {
-            _block->insts.push_back(std::make_shared<IRMalloc>(_opr, IROperandImm32(prog->getClass(node->exprType.name)->size)));
-            if (prog->hasFunc(node->exprType.name + "_" + node->exprType.name)) {
-                _block->insts.push_back(
-                        std::make_shared<IRCall>(prog->getFunc(node->exprType.name + "_" + node->exprType.name),
-                                                 std::vector<IROperand>{}));
-            }
-        }
-        else {
-            _block->insts.push_back(std::make_shared<IRMalloc>(_opr, IROperandImm32(node->exprType.size())));
-        }
-        return;
+        _block->insts.push_back(std::make_shared<IRMalloc>(_opr, IROperandImm32(prog->getClass(node->exprType.name)->size)));
+        if (prog->hasFunc(node->exprType.name + "_" + node->exprType.name))
+            _block->insts.push_back(std::make_shared<IRCall>(prog->getFunc(node->exprType.name + "_" + node->exprType.name), std::vector<IROperand>{}));
     }
-    if (node->paras[deep]) {
+    else if (node->paras[deep]) {
         visit(std::dynamic_pointer_cast<ASTExpr>(node->paras[deep]));
         _opr = loadOperand(_opr);
-        IROperand size = IROperandReg32(prog->newLabel());
-        _block->insts.push_back(std::make_shared<IRBinary>(IRBinary::Mul, size, _opr, IROperandImm32(4)));
+        IROperand size;
+        if (deep == node->paras.size() - 1 && node->exprType.size() == 1) {
+            size = _opr;
+        }
+        else {
+            size = IROperandReg32(prog->newLabel());
+            _block->insts.push_back(std::make_shared<IRBinary>(IRBinary::Mul, size, _opr, IROperandImm32(4)));
+        }
         IROperand tmp = IROperandReg32(prog->newLabel());
         _block->insts.push_back(std::make_shared<IRBinary>(IRBinary::Add, tmp, size, IROperandImm32(4)));
         IROperand begin0 = IROperandReg32(prog->newLabel());
@@ -476,6 +493,10 @@ void IRBuilder::createArray(std::shared_ptr<ASTExprNew> node, int deep) {
         if (deep + 1 < node->paras.size() && node->paras[deep + 1] == nullptr) {
             _opr = begin;
             return;
+        }
+        else if (deep + 1 == node->paras.size() && !node->exprType.isClass()) {
+            _opr = begin;
+            return ;
         }
 
         IROperand end = IROperandReg32(prog->newLabel(), 1);
@@ -707,11 +728,11 @@ void IRBuilder::visit(std::shared_ptr<ASTExprUnary> node) {
         _opr = dst;
     }
     else if (node->op == ASTExprUnary::bitwise_not) {
-        _block->insts.push_back(std::make_shared<IRBinary>(IRBinary::Xor, dst, IROperandImm32(0), tmp));
+        _block->insts.push_back(std::make_shared<IRBinary>(IRBinary::Xor, dst, IROperandImm32(-1), tmp));
         _opr = dst;
     }
     else if (node->op == ASTExprUnary::logic_not) {
-        _block->insts.push_back(std::make_shared<IRBinary>(IRBinary::Xor, dst, IROperandImm8(0), tmp));
+        _block->insts.push_back(std::make_shared<IRBinary>(IRBinary::Xor, dst, IROperandImm8(1), tmp));
         _opr = dst;
     }
 }

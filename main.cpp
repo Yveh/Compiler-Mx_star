@@ -18,8 +18,8 @@
 
 int main(int argc, char *argv[]){
     /* If Debug */
-//    const std::string filepath("../local-judge/testcase/codegen/t9.mx");
-    const std::string filepath("../test.mx");
+    const std::string filepath("../local-judge/testcase/codegen/t55.mx");
+//    const std::string filepath("../test.mx");
     std::ifstream ifs;
     ifs.open(filepath);
     if (!ifs.good()) {

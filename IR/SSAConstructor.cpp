@@ -131,15 +131,15 @@ void SSAConstructor::runForFunction(std::shared_ptr<IRFunction> func) {
             for (auto _inst : blk->insts) {
                 if (std::dynamic_pointer_cast<IRMalloc>(_inst)) {
                     auto inst = std::dynamic_pointer_cast<IRMalloc>(_inst);
-                    if (inst->dst == pp.first)
-                        inst->dst = dst;
+//                    if (inst->dst == pp.first)
+//                        inst->dst = dst;
                     if (inst->size == pp.first)
                         inst->size = dst;
                 }
                 if (std::dynamic_pointer_cast<IRBinary>(_inst)) {
                     auto inst = std::dynamic_pointer_cast<IRBinary>(_inst);
-                    if (inst->dst == pp.first)
-                        inst->dst = dst;
+//                    if (inst->dst == pp.first)
+//                        inst->dst = dst;
                     if (inst->src1 == pp.first)
                         inst->src1 = dst;
                     if (inst->src2 == pp.first)
@@ -152,8 +152,8 @@ void SSAConstructor::runForFunction(std::shared_ptr<IRFunction> func) {
                 }
                 else if (std::dynamic_pointer_cast<IRCall>(_inst)) {
                     auto inst = std::dynamic_pointer_cast<IRCall>(_inst);
-                    if (inst->dst == pp.first)
-                        inst->dst = dst;
+//                    if (inst->dst == pp.first)
+//                        inst->dst = dst;
                     for (auto &para : inst->paras) {
                         if (para == pp.first)
                             para = dst;
@@ -161,8 +161,8 @@ void SSAConstructor::runForFunction(std::shared_ptr<IRFunction> func) {
                 }
                 else if (std::dynamic_pointer_cast<IRLoad>(_inst)) {
                     auto inst = std::dynamic_pointer_cast<IRLoad>(_inst);
-                    if (inst->dst == pp.first)
-                        inst->dst = dst;
+//                    if (inst->dst == pp.first)
+//                        inst->dst = dst;
                     if (inst->addr == pp.first)
                         inst->addr = dst;
                 }
@@ -177,6 +177,13 @@ void SSAConstructor::runForFunction(std::shared_ptr<IRFunction> func) {
                     auto inst = std::dynamic_pointer_cast<IRReturn>(_inst);
                     if (inst->value == pp.first)
                         inst->value = dst;
+                }
+                else if (std::dynamic_pointer_cast<IRPhi>(_inst)) {
+                    auto inst = std::dynamic_pointer_cast<IRPhi>(_inst);
+                    for (auto &value : inst->values) {
+                        if (value == pp.first)
+                            value = dst;
+                    }
                 }
 
             }

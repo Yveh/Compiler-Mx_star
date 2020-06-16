@@ -74,8 +74,24 @@ void InstSelector::runForBlock(std::shared_ptr<IRBlock> blk) {
                     case IRBinary::Add: value = inst->src1.id + inst->src2.id; break;
                     case IRBinary::Sub: value = inst->src1.id - inst->src2.id; break;
                     case IRBinary::Mul: value = inst->src1.id * inst->src2.id; break;
-                    case IRBinary::Sdiv: value = inst->src1.id / inst->src2.id; break;
-                    case IRBinary::Srem: value = inst->src1.id % inst->src2.id; break;
+                    case IRBinary::Sdiv: {
+                        if (inst->src2.id == 0) {
+                            makeBinary(inst->src1, inst->src2, Sop::Div, RegTrans(inst->dst));
+                            continue;
+                        }
+                        else
+                            value = inst->src1.id / inst->src2.id;
+                        break;
+                    }
+                    case IRBinary::Srem: {
+                        if (inst->src2.id == 0) {
+                            makeBinary(inst->src1, inst->src2, Sop::Rem, RegTrans(inst->dst));
+                            continue;
+                        }
+                        else
+                            value = inst->src1.id % inst->src2.id;
+                        break;
+                    }
                     case IRBinary::Shl: value = inst->src1.id << inst->src2.id; break;
                     case IRBinary::Ashr: value = inst->src1.id >> inst->src2.id; break;
                     case IRBinary::Eq: value = inst->src1.id == inst->src2.id; break;
@@ -174,14 +190,19 @@ void InstSelector::runForBlock(std::shared_ptr<IRBlock> blk) {
         else if (std::dynamic_pointer_cast<IRStore>(_inst)) {
             auto inst = std::dynamic_pointer_cast<IRStore>(_inst);
             RVReg addr = RegTrans(inst->addr);
+            RVReg value = RegTrans(inst->value);
+            if (value.is_constString) {
+                RVReg tmp(newLabel(), 4);
+                _block->insts.push_back(std::make_shared<RVLa>(tmp, value));
+                value = tmp;
+            }
             if (addr.is_global) {
-                RVReg value = RegTrans(inst->value);
                 RVReg ptr(newLabel(), 4);
                 _block->insts.push_back(std::make_shared<RVLui>(ptr, RVImm(addr.id, Rop::Hi)));
                 _block->insts.push_back(std::make_shared<RVSt>(value, ptr, RVImm(addr.id, Rop::Lo), inst->value.size()));
             }
             else {
-                _block->insts.push_back(std::make_shared<RVSt>(RegTrans(inst->value), addr, RVImm(0), inst->value.size()));
+                _block->insts.push_back(std::make_shared<RVSt>(value, addr, RVImm(0), inst->value.size()));
             }
         }
         else if (std::dynamic_pointer_cast<IRReturn>(_inst)) {
