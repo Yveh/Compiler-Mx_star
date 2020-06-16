@@ -31,7 +31,7 @@ int main(int argc, char *argv[]){
     }
 
 
-//    const std::string filepath("../local-judge/testcase/codegen/t17.mx");
+//    const std::string filepath("../local-judge/testcase/optim/pi.mx");
 ////    const std::string filepath("../test.mx");
 //    std::ifstream ifs;
 //    ifs.open(filepath);
@@ -87,6 +87,8 @@ int main(int argc, char *argv[]){
     SSAdestructor->run(IRProg);
 //    IRProg->outputIR(std::cout);
 
+    if (optimize)
+        IRProg->optimize();
 //    const std::string SSAFilePath = std::string("../SSA.ll");
 //    std::ofstream ofsSSA(SSAFilePath);
 //    IRProg->outputIR(ofsSSA);
@@ -102,6 +104,10 @@ int main(int argc, char *argv[]){
 
     std::shared_ptr<RegAllocation> RegAllocator = std::make_shared<RegAllocation>(RVProg);
     RegAllocator->run();
+
+    if (optimize)
+        RVProg->optimize();
+
     RVProg->outputIR(std::cout);
 
     const std::string FinalFilePath = std::string("./output.s");

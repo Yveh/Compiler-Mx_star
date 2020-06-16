@@ -1,1 +1,1 @@
-./Compiler-Mx_star -c
+./Compiler-Mx_star

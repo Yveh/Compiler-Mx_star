@@ -74,3 +74,23 @@ std::string RVProgram::StringTrans(std::string s) {
     }
     return ret;
 }
+
+void RVProgram::optimize() {
+    for (auto func : functions) {
+        for (auto blk : func->blocks) {
+            for (auto it = blk->insts.begin(); it != blk->insts.end(); ) {
+                if (std::dynamic_pointer_cast<RVMv>(*it)) {
+                    auto inst = std::dynamic_pointer_cast<RVMv>(*it);
+                    if (inst->rd.id == inst->rs.id)
+                        it = blk->insts.erase(it);
+                    else
+                        it++;
+                }
+                else
+                    it++;
+            }
+        }
+    }
+
+
+}

@@ -26,4 +26,5 @@ public:
     RVReg getGlobal(int _id);
     void outputBlock(std::shared_ptr<RVBlock> blk, std::ostream &ofs);
     void outputIR(std::ostream &ofs);
+    void optimize();
 };

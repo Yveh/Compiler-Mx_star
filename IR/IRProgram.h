@@ -16,6 +16,8 @@ public:
     std::vector<std::shared_ptr<IRFunction>> func;
     std::vector<std::shared_ptr<IRClass>> object;
 
+    void optimize();
+
     bool hasFunc(std::string name);
     bool hasVar(int x);
     std::shared_ptr<IRFunction> getFunc(std::string name);

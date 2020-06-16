@@ -71,3 +71,23 @@ void IRProgram::getAllBlocks() {
         function->getAllBlocks(function->inBlock);
     }
 }
+
+void IRProgram::optimize() {
+    for (auto f : func) {
+        for (auto blk : f->blocks) {
+            for (auto it = blk->insts.begin(); it != blk->insts.end();it++) {
+                std::map<IROperand, IROperand> mmm;
+                if (std::dynamic_pointer_cast<IRStore>(*it)) {
+                    auto inst = std::dynamic_pointer_cast<IRStore>(*it);
+                    mmm[inst->addr] = mmm[inst->value];
+                }
+                if (std::dynamic_pointer_cast<IRLoad>(*it)) {
+                    auto inst = std::dynamic_pointer_cast<IRLoad>(*it);
+                    if (mmm.count(inst->addr)) {
+                        *it = std::make_shared<IRMove>(inst->dst, mmm[inst->addr]);
+                    }
+                }
+            }
+        }
+    }
+}
