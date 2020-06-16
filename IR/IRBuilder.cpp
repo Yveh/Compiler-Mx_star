@@ -213,7 +213,7 @@ void IRBuilder::visit(std::shared_ptr<ASTRoot> node) {
         prog->ref_class[obj->name] = prog->object.size() - 1;
         for (auto fchild : obj->funcList) {
             auto func = std::dynamic_pointer_cast<ASTFuncDecl>(fchild);
-            prog->func.push_back(std::make_shared<IRFunction>(func->name));
+            prog->func.push_back(std::make_shared<IRFunction>(obj->name + "_" + func->name));
             prog->func.back()->retType = IROperand(RegFromMx(func->retType));
             prog->func.back()->inBlock = std::make_shared<IRBlock>(prog->newLabel());
             prog->func.back()->outBlock = std::make_shared<IRBlock>(prog->newLabel());
@@ -742,8 +742,14 @@ void IRBuilder::visit(std::shared_ptr<ASTExprSubscript> node) {
     IROperand src1 = loadOperand(_opr);
     visit(std::dynamic_pointer_cast<ASTExpr>(node->subscript));
     _opr = loadOperand(_opr);
-    IROperand src2 = IROperandReg32(prog->newLabel());
-    _block->insts.push_back(std::make_shared<IRBinary>(IRBinary::Mul, src2, _opr, IROperandImm32(4)));
+    IROperand src2;
+    if (node->exprType.dim > 0 || node->exprType.size() == 4) {
+        src2 = IROperandReg32(prog->newLabel());
+        _block->insts.push_back(std::make_shared<IRBinary>(IRBinary::Mul, src2, _opr, IROperandImm32(4)));
+    }
+    else {
+        src2 = _opr;
+    }
     IROperand dst = IROperand(RegFromMx(node->exprType), prog->newLabel(), 1);
     _block->insts.push_back(std::make_shared<IRBinary>(IRBinary::Add, dst, src1, src2));
     _opr = dst;

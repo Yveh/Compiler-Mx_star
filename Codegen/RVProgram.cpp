@@ -40,7 +40,7 @@ void RVProgram::outputIR(std::ostream &ofs) {
         ofs << "\t.type\t" << ".str." << i << " ,@object" << std::endl;
         ofs << "\t.section\t.rodata" << std::endl;
         ofs << ".str." << i << ":" << std::endl;
-        ofs << "\t.asciz\t\"" << constString[i] + "\"" << std::endl;
+        ofs << "\t.asciz\t\"" << StringTrans(constString[i]) + "\"" << std::endl;
         ofs << "\t.size\t" << ".str." << i << ", " << constString.size() + 1 << std::endl << std::endl;
     }
 }
@@ -49,4 +49,28 @@ void RVProgram::outputBlock(std::shared_ptr<RVBlock> blk, std::ostream &ofs) {
     ofs << "." << blk->funcName << "_.bb" << blk->label << ":" << std::endl;
     for (auto inst : blk->insts)
         ofs << "\t" << inst->to_string() << std::endl;
+}
+
+std::string RVProgram::StringTrans(std::string s) {
+    std::string ret;
+    for (int i = 0; i < s.length(); ++i) {
+        switch (s[i]) {
+//            case '\n':
+//                ret += "\\n";
+//                break;
+//            case '\t':
+//                ret += "\\t";
+//                break;
+//            case '\\':
+//                ret += "\\\\";
+//                break;
+//            case '"':
+//                ret += "\\\"";
+//                break;
+            default:
+                ret += s[i];
+                break;
+        }
+    }
+    return ret;
 }

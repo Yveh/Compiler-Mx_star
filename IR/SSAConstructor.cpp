@@ -126,7 +126,7 @@ void SSAConstructor::runForFunction(std::shared_ptr<IRFunction> func) {
     }
     for (auto pp : fa) {
         IROperand dst = getfa(fa, pp.first);
-        std::cerr << pp.first.get_id() << " " << dst.get_id() << std::endl;
+//        std::cerr << pp.first.get_id() << " " << dst.get_id() << std::endl;
         for (auto blk : func->blocks) {
             for (auto _inst : blk->insts) {
                 if (std::dynamic_pointer_cast<IRMalloc>(_inst)) {

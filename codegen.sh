@@ -1,2 +1,1 @@
-cd local
-./Compiler-Mx_star
+./Compiler-Mx_star -c

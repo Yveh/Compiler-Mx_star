@@ -17,24 +17,36 @@
 #include "RegAllocation.h"
 
 int main(int argc, char *argv[]){
-    /* If Debug */
-    const std::string filepath("../local-judge/testcase/codegen/t55.mx");
-//    const std::string filepath("../test.mx");
-    std::ifstream ifs;
-    ifs.open(filepath);
-    if (!ifs.good()) {
-        std::cerr << "bad" << std::endl;
+    bool codegen = true;
+    bool optimize = true;
+    if (argc == 2) {
+        if (strcmp(argv[1], "-s") == 0) {
+            codegen = false;
+            optimize = false;
+        }
+        else if (strcmp(argv[1], "-c") == 0) {
+            optimize = false;
+        }
     }
-    antlr4::ANTLRInputStream input(ifs);
+
+    /* If Debug */
+//    const std::string filepath("../local-judge/testcase/codegen/t19.mx");
+////    const std::string filepath("../test.mx");
+//    std::ifstream ifs;
+//    ifs.open(filepath);
+//    if (!ifs.good()) {
+//        std::cerr << "bad" << std::endl;
+//    }
+//    antlr4::ANTLRInputStream input(ifs);
     /* If OnlineJudge */
-//    antlr4::ANTLRInputStream input(std::cin);
+    antlr4::ANTLRInputStream input(std::cin);
 
     /* ************** */
     Mx_starLexer lexer(&input);
     antlr4::CommonTokenStream tokens(&lexer);
     tokens.fill();
     Mx_starParser parser(&tokens);
-    antlr4::tree::ParseTree* tree = parser.prog();
+    antlr4::tree::ParseTree *tree = parser.prog();
     if (lexer.getNumberOfSyntaxErrors() + parser.getNumberOfSyntaxErrors() > 0)
         return -1;
     ASTBuilder ASTbuilder;
@@ -53,28 +65,31 @@ int main(int argc, char *argv[]){
         issues->print();
         return -1;
     }
+
+    if (!codegen)
+        return 0;
     std::shared_ptr<IRProgram> IRProg = std::make_shared<IRProgram>();
     std::shared_ptr<IRBuilder> IRbuilder = std::make_shared<IRBuilder>(IRProg);
     IRbuilder->createIR(root);
     IRProg->getAllBlocks();
-    IRProg->outputIR(std::cout);
+//    IRProg->outputIR(std::cout);
     std::shared_ptr<DominatorTree> Domtree = std::make_shared<DominatorTree>();
     Domtree->createDomTree(IRProg);
     std::shared_ptr<SSAConstructor> SSAconstructor = std::make_shared<SSAConstructor>();
     SSAconstructor->run(IRProg);
-    IRProg->outputIR(std::cout);
+//    IRProg->outputIR(std::cout);
     std::shared_ptr<SSADestructor> SSAdestructor = std::make_shared<SSADestructor>();
     SSAdestructor->run(IRProg);
-    IRProg->outputIR(std::cout);
+//    IRProg->outputIR(std::cout);
 
-    const std::string SSAFilePath = std::string("../SSA.ll");
-    std::ofstream ofsSSA(SSAFilePath);
-    IRProg->outputIR(ofsSSA);
+//    const std::string SSAFilePath = std::string("../SSA.ll");
+//    std::ofstream ofsSSA(SSAFilePath);
+//    IRProg->outputIR(ofsSSA);
 
     std::shared_ptr<RVProgram> RVProg = std::make_shared<RVProgram>();
     std::shared_ptr<InstSelector> RVbuilder = std::make_shared<InstSelector>(IRProg, RVProg);
     RVbuilder->run();
-    RVProg->outputIR(std::cout);
+//    RVProg->outputIR(std::cout);
 
     const std::string RVFilePath("../RV.s");
     std::ofstream ofsRV(RVFilePath);

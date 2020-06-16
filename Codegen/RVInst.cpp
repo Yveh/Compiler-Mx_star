@@ -336,7 +336,7 @@ std::string RVItype::to_string() {
         case Sop::Xor: ret = "xori "; break;
         case Sop::Add: ret = "addi "; break;
         case Sop::Sll: ret = "slli "; break;
-        case Sop::Sra: ret = "slri "; break;
+        case Sop::Sra: ret = "srli "; break;
         case Sop::Slt: ret = "slti "; break;
     }
     ret += rd.to_string() + ", " + rs.to_string() + ", " + imm.to_string();
@@ -381,7 +381,7 @@ std::string RVRtype::to_string() {
         case Sop::Add: ret = "add "; break;
         case Sop::Sub: ret = "sub "; break;
         case Sop::Sll: ret = "sll "; break;
-        case Sop::Sra: ret = "slr "; break;
+        case Sop::Sra: ret = "srl "; break;
         case Sop::Mul: ret = "mul "; break;
         case Sop::Div: ret = "div "; break;
         case Sop::Rem: ret = "rem "; break;

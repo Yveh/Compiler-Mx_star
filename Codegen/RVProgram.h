@@ -18,6 +18,8 @@ public:
     std::vector<std::shared_ptr<RVFunction>> builtin_functions;
     std::vector<std::string> constString;
 
+    std::string StringTrans(std::string s);
+
     bool hasVar(int _id);
     RVReg getVar(int _id);
     bool checkGlobal(int _id);
