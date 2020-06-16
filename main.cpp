@@ -97,7 +97,7 @@ int main(int argc, char *argv[]){
 
     std::shared_ptr<RegAllocation> RegAllocator = std::make_shared<RegAllocation>(RVProg);
     RegAllocator->run();
-//    RVProg->outputIR(std::cout);
+    RVProg->outputIR(std::cout);
 
     const std::string FinalFilePath = std::string("./output.s");
     std::ofstream ofsFinal(FinalFilePath);
