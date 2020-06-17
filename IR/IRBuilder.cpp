@@ -801,7 +801,11 @@ void IRBuilder::visit(std::shared_ptr<ASTExprMemberAccess> node) {
             _opr = loadOperand(_opr);
             paras.push_back(_opr);
         }
-        std::shared_ptr<IRFunction> func = prog->getFunc(objInfo->name + "_" + memberFunc->name);
+        std::shared_ptr<IRFunction> func;
+        if (qwq->exprType.dim > 0)
+            func = prog->getFunc("_" + memberFunc->name);
+        else
+            func = prog->getFunc(objInfo->name + "_" + memberFunc->name);
         if (func->retType.type == IROperand::Void) {
             _block->insts.push_back(std::make_shared<IRCall>(func, paras));
         }
