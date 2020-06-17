@@ -31,7 +31,7 @@ int main(int argc, char *argv[]){
     }
 
 
-//    const std::string filepath("../local-judge/testcase/optim/pi.mx");
+//    const std::string filepath("../local-judge/testcase/optim/lca.mx");
 ////    const std::string filepath("../test.mx");
 //    std::ifstream ifs;
 //    ifs.open(filepath);
@@ -83,15 +83,27 @@ int main(int argc, char *argv[]){
     std::shared_ptr<SSAConstructor> SSAconstructor = std::make_shared<SSAConstructor>();
     SSAconstructor->run(IRProg);
 //    IRProg->outputIR(std::cout);
+
+//    const std::string SSAFilePath2 = std::string("../beforeopt.ll");
+//    std::ofstream ofsSSA2(SSAFilePath2);
+//    IRProg->outputIR(ofsSSA2);
+
+    if (optimize) {
+//        IRProg->jumpErase();
+        IRProg->constantPropagation();
+    }
+
+//    const std::string SSAFilePath = std::string("../SSA.ll");
+//    std::ofstream ofsSSA(SSAFilePath);
+//    IRProg->outputIR(ofsSSA);
+
     std::shared_ptr<SSADestructor> SSAdestructor = std::make_shared<SSADestructor>();
     SSAdestructor->run(IRProg);
 //    IRProg->outputIR(std::cout);
 
     if (optimize)
         IRProg->optimize();
-//    const std::string SSAFilePath = std::string("../SSA.ll");
-//    std::ofstream ofsSSA(SSAFilePath);
-//    IRProg->outputIR(ofsSSA);
+
 
     std::shared_ptr<RVProgram> RVProg = std::make_shared<RVProgram>();
     std::shared_ptr<InstSelector> RVbuilder = std::make_shared<InstSelector>(IRProg, RVProg);

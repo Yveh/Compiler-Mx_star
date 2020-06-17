@@ -16,6 +16,9 @@ public:
     std::vector<std::shared_ptr<IRFunction>> func;
     std::vector<std::shared_ptr<IRClass>> object;
 
+    void jumpEraseforBlock(std::shared_ptr<IRBlock> blk);
+    void jumpErase();
+    void constantPropagation();
     void optimize();
 
     bool hasFunc(std::string name);

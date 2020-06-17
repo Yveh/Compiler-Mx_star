@@ -370,11 +370,48 @@ void InstSelector::makeCmp(IROperand src1, IROperand src2, IRBinary::op_t op, RV
 }
 
 void InstSelector::makeBinary(IROperand src1, IROperand src2, Sop op, RVReg dst) {
-    if (op == Mul || op == Div || op == Rem)
+    if (op == Div || op == Rem)
         _block->insts.push_back(std::make_shared<RVRtype>(dst, RegTrans(src1), RegTrans(src2), op));
     else if (op == Sub) {
-        if (src2.is_imm() && checkImm(src2.id)) {
+        if (src2.is_imm() && checkImm(src2.id) && src2.id == 0) {
+            _block->insts.push_back(std::make_shared<RVMv>(dst, RegTrans(src1)));
+        }
+        else if (src2.is_imm() && checkImm(src2.id)) {
             _block->insts.push_back(std::make_shared<RVItype>(dst, RegTrans(src1), RVImm(-src2.id), Sop::Add));
+        }
+        else {
+            _block->insts.push_back(std::make_shared<RVRtype>(dst, RegTrans(src1), RegTrans(src2), op));
+        }
+    }
+    else if (op == Mul) {
+        if (src1.is_imm() && checkImm(src1.id) && src1.id == 4) {
+            _block->insts.push_back(std::make_shared<RVItype>(dst, RegTrans(src2), RVImm(2), Sop::Sll));
+        }
+        else if (src2.is_imm() && checkImm(src2.id) && src2.id == 4) {
+            _block->insts.push_back(std::make_shared<RVItype>(dst, RegTrans(src1), RVImm(2), Sop::Sll));
+        }
+        else if (src1.is_imm() && checkImm(src1.id) && src1.id == 0) {
+            _block->insts.push_back(std::make_shared<RVMv>(dst, RVReg_zero()));
+        }
+        else if (src2.is_imm() && checkImm(src2.id) && src2.id == 0) {
+            _block->insts.push_back(std::make_shared<RVMv>(dst, RVReg_zero()));
+        }
+        else {
+            _block->insts.push_back(std::make_shared<RVRtype>(dst, RegTrans(src1), RegTrans(src2), op));
+        }
+    }
+    else if (op == Add) {
+        if (src1.is_imm() && checkImm(src1.id) && src1.id == 0) {
+            _block->insts.push_back(std::make_shared<RVMv>(dst, RegTrans(src2)));
+        }
+        else if (src2.is_imm() && checkImm(src2.id) && src2.id == 0) {
+            _block->insts.push_back(std::make_shared<RVMv>(dst, RegTrans(src1)));
+        }
+        else if (src1.is_imm() && checkImm(src1.id)) {
+            _block->insts.push_back(std::make_shared<RVItype>(dst, RegTrans(src2), RVImm(src1.id), op));
+        }
+        else if (src2.is_imm() && checkImm(src2.id)) {
+            _block->insts.push_back(std::make_shared<RVItype>(dst, RegTrans(src1), RVImm(src2.id), op));
         }
         else {
             _block->insts.push_back(std::make_shared<RVRtype>(dst, RegTrans(src1), RegTrans(src2), op));
